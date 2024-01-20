@@ -1,5 +1,8 @@
 extern crate itertools;
 use itertools::Itertools;
+use std::path::Path;
+use std::fs;
+use std::env;
 struct Gift {
     l: u32,
     w: u32,
@@ -60,12 +63,35 @@ fn compute_ribbon(input: &str) -> u32 {
 
 #[aoc(day2, part1)]
 pub fn run(input: &str) -> String {
-    compute_wapping_paper(input).to_string()
+    let res = compute_wapping_paper(input).to_string();
+
+    save_answer(&res, "day2.1");
+
+    res
 }
 
 #[aoc(day2, part2)]
 pub fn run_pt2(input: &str) -> String {
-    compute_ribbon(input).to_string()
+    let res = compute_ribbon(input).to_string();
+
+    save_answer(&res, "day2.2");
+
+    res
+}
+
+pub fn save_answer(ans: &str, part: &str){
+    let ans_path = get_current_working_dir();
+    let ans_path = Path::new(&ans_path).parent().unwrap().parent().unwrap().parent().unwrap().join("ans");
+    let file_path = ans_path.join(format!("{}.txt", part));
+    fs::write(file_path, ans).expect("Unable to write file");
+}
+
+fn get_current_working_dir() -> String {
+    let res = env::current_dir();
+    match res {
+        Ok(path) => path.into_os_string().into_string().unwrap(),
+        Err(_) => "FAILED".to_string()
+    }
 }
 
 #[test]
