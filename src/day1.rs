@@ -1,3 +1,7 @@
+use std::path::Path;
+use std::fs;
+use std::env;
+
 const UP_CHAR: &char = &'(';
 const DOWN_CHAR: &char = &')';
 
@@ -23,12 +27,35 @@ fn find_basement_step(input: &str) -> usize {
 
 #[aoc(day1, part1)]
 fn run(input: &str) -> String {
-    compute_floor(input).to_string()
+    let res = compute_floor(input).to_string();
+
+    save_answer(&res, "day1.1");
+
+    res
 }
 
 #[aoc(day1, part2)]
 fn run_pt2(input: &str) -> String {
-    find_basement_step(input).to_string()
+    let res = find_basement_step(input).to_string();
+
+    save_answer(&res, "day1.2");
+
+    res
+}
+
+pub fn save_answer(ans: &str, part: &str){
+    let ans_path = get_current_working_dir();
+    let ans_path = Path::new(&ans_path).parent().unwrap().parent().unwrap().parent().unwrap().join("ans");
+    let file_path = ans_path.join(format!("{}.txt", part));
+    fs::write(file_path, ans).expect("Unable to write file");
+}
+
+fn get_current_working_dir() -> String {
+    let res = env::current_dir();
+    match res {
+        Ok(path) => path.into_os_string().into_string().unwrap(),
+        Err(_) => "FAILED".to_string()
+    }
 }
 
 #[test]
