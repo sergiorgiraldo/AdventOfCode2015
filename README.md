@@ -2,6 +2,12 @@
 
 My solutions to [Advent of Code 2015](https://adventofcode.com/2015) done in [Rust](https://www.rust-lang.org/)
 
+## Performance
+
+![](https://img.shields.io/badge/day%20📅-24-blue)
+ 
+![](https://img.shields.io/badge/stars%20⭐-0-yellow)
+
 # Automation
 
 Based on https://github.com/gobanos/cargo-aoc
