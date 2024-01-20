@@ -1,0 +1,1 @@
+/Users/GK47LX/source/AdventOfCode2015/target/aoc/aoc-autobuild/target/release/aoc-autobuild: /Users/GK47LX/source/AdventOfCode2015/src/day1.rs /Users/GK47LX/source/AdventOfCode2015/src/lib.rs /Users/GK47LX/source/AdventOfCode2015/target/aoc/aoc-autobuild/src/../../../../input/2015/day1.txt /Users/GK47LX/source/AdventOfCode2015/target/aoc/aoc-autobuild/src/main.rs

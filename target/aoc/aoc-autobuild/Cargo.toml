@@ -1,0 +1,13 @@
+[package]
+name = "aoc-autobuild"
+version = "0.3.0"
+authors = ["Grégory Obanos <gregory.obanos@gmail.com>"]
+
+[dependencies]
+advent_of_code2015 = { path = "../../.." }
+
+# For release
+aoc-runner = "0.3"
+# For dev
+# aoc-runner = { path = "../../../../aoc-runner" }
+
