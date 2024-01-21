@@ -1,8 +1,6 @@
+use crate::utils;
 use std::collections::HashSet;
 use std::ops::AddAssign;
-use std::path::Path;
-use std::fs;
-use std::env;
 
 #[derive(Eq, PartialEq, Hash, Copy, Clone)]
 struct Location(i32, i32);
@@ -63,33 +61,18 @@ fn santa_robo_deliver(input: &str) -> usize {
 pub fn run(input: &str) -> String {
     let res = santa_deliver(input).to_string();
 
-    save_answer(&res, "day3.1");
+    utils::save_answer(&res, "day3.1");
 
-    res 
+    res
 }
 
 #[aoc(day3, part2)]
 pub fn run_pt2(input: &str) -> String {
     let res = santa_robo_deliver(input).to_string();
 
-    save_answer(&res, "day3.2");
+    utils::save_answer(&res, "day3.2");
 
     res
-}
-
-pub fn save_answer(ans: &str, part: &str){
-    let ans_path = get_current_working_dir();
-    let ans_path = Path::new(&ans_path).parent().unwrap().parent().unwrap().parent().unwrap().join("ans");
-    let file_path = ans_path.join(format!("{}.txt", part));
-    fs::write(file_path, ans).expect("Unable to write file");
-}
-
-fn get_current_working_dir() -> String {
-    let res = env::current_dir();
-    match res {
-        Ok(path) => path.into_os_string().into_string().unwrap(),
-        Err(_) => "FAILED".to_string()
-    }
 }
 
 #[test]

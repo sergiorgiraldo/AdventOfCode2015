@@ -1,10 +1,8 @@
+use crate::utils;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::mpsc::{Receiver, Sender};
 use std::sync::{mpsc, Arc};
 use std::thread::spawn;
-use std::path::Path;
-use std::fs;
-use std::env;
 
 extern crate crypto;
 
@@ -53,7 +51,7 @@ fn mine_adventcoins(key: &str, signal: &str) -> usize {
 pub fn run(input: &str) -> String {
     let res = mine_adventcoins(input, OK_SIGNAL).to_string();
 
-    save_answer(&res, "day4.1");
+    utils::save_answer(&res, "day4.1");
 
     res
 }
@@ -62,24 +60,9 @@ pub fn run(input: &str) -> String {
 pub fn run_pt2(input: &str) -> String {
     let res = mine_adventcoins(input, OK_SIGNAL_PT2).to_string();
 
-    save_answer(&res, "day4.2");
+    utils::save_answer(&res, "day4.2");
 
     res
-}
-
-pub fn save_answer(ans: &str, part: &str){
-    let ans_path = get_current_working_dir();
-    let ans_path = Path::new(&ans_path).parent().unwrap().parent().unwrap().parent().unwrap().join("ans");
-    let file_path = ans_path.join(format!("{}.txt", part));
-    fs::write(file_path, ans).expect("Unable to write file");
-}
-
-fn get_current_working_dir() -> String {
-    let res = env::current_dir();
-    match res {
-        Ok(path) => path.into_os_string().into_string().unwrap(),
-        Err(_) => "FAILED".to_string()
-    }
 }
 
 #[test]
