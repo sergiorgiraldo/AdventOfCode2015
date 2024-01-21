@@ -1,9 +1,9 @@
 extern crate regex;
+use crate::utils;
+use lazy_static::lazy_static;
 use regex::Regex;
 use std::cmp::max;
 use std::iter;
-use crate::utils;
-use lazy_static::lazy_static;
 
 const GRID_SIZE: (usize, usize) = (1_000, 1_000);
 
@@ -96,8 +96,7 @@ fn make_grid() -> Vec<bool> {
 pub fn run(input: &str) -> String {
     let mut grid = make_grid();
 
-    let instructions: Vec<Instruction> =
-        input.lines().map(|l| Instruction::from_str(l)).collect();
+    let instructions: Vec<Instruction> = input.lines().map(|l| Instruction::from_str(l)).collect();
 
     switch_lights(&mut grid, &instructions);
 
@@ -112,8 +111,7 @@ pub fn run(input: &str) -> String {
 pub fn run_pt2(input: &str) -> String {
     let mut grid = make_grid().iter().map(|_| 0).collect::<Vec<i32>>();
 
-    let instructions: Vec<Instruction> =
-        input.lines().map(|l| Instruction::from_str(l)).collect();
+    let instructions: Vec<Instruction> = input.lines().map(|l| Instruction::from_str(l)).collect();
 
     switch_lights_advanced(&mut grid, &instructions);
 
