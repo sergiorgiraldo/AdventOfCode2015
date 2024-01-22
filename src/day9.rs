@@ -63,13 +63,13 @@ fn build_map(input: &str) -> (HashMap<Route, u32>, Vec<String>) {
     let mut routes: HashMap<Route, u32> = HashMap::new();
     let mut cities: HashSet<String> = HashSet::new();
 
-    for line in input.lines() {
+    input.lines().for_each(|line| {
         let route = Route::from_str(line, false);
         routes.insert(route.0, route.1);
         
         let route = Route::from_str(line, true);
         routes.insert(route.0, route.1);        
-    } 
+    }); 
 
     for route in routes.keys() {
         cities.insert(route.origin.clone());
