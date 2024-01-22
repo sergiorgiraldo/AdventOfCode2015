@@ -71,9 +71,10 @@ fn build_map(input: &str) -> (HashMap<Route, u32>, Vec<String>) {
         routes.insert(route.0, route.1);        
     }); 
 
-    for route in routes.keys() {
+    routes.keys().for_each(|route| {
         cities.insert(route.origin.clone());
-    }
+        cities.insert(route.dest.clone());
+    });
 
     let cs: Vec<String> = cities.iter().cloned().collect();
 
