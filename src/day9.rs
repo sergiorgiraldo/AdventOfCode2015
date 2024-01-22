@@ -2,74 +2,81 @@ extern crate itertools;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use crate::utils;
-
+use std::cmp::min;
+use std::cmp::max;
+extern crate permutohedron;
+use permutohedron::LexicalPermutation;
 #[derive(Debug, PartialEq, Eq, Hash)]
-struct Route<'a> {
-    origin: &'a str,
-    dest: &'a str
+struct Route {
+    origin: String,
+    dest: String
 }
 
-fn route_len_range(routes: HashMap<Route, u32>, cities: Vec<&str>) -> (u32, u32) {
-    let permutations = get_permutations(cities);
+impl Route {
+    //London to Dublin = 464
+    fn from_str(s: &str, round_trip: bool) -> (Self, u32) {
+        let split: Vec<&str> = s.split(" ").collect();
+        let origin = split[0].to_string();
+        let dest = split[2].to_string();
+        let dist = split[4].parse::<u32>().unwrap();
+
+        if round_trip {
+            (Route{origin: dest, dest: origin}, dist)
+        }
+        else{
+            (Route{origin, dest}, dist)
+        }
+    }
+}
+
+fn route_len_range(routes: HashMap<Route, u32>, mut cities: Vec<String>) -> (u32, u32) {
+    let mut permutations = Vec::new(); //permutohedron
     let mut min_dist = u32::max_value();
     let mut max_dist = 0;
-    for p in permutations {
-        let mut dist = 0;
-        for i in 0..p.len()-1 {
-            let c1 = p.get(i).unwrap();
-            let c2 = p.get(i+1).unwrap();
-            let r = Route{origin: c1, dest: c2};
-            dist += *routes.get(&r).unwrap();
+
+    loop {
+        permutations.push(cities.to_vec());
+        if !cities.next_permutation() {
+            break;
         }
-        if dist < min_dist { min_dist = dist; }
-        if dist > max_dist { max_dist = dist; }
     }
+
+    for permutation in permutations {
+        let mut dist = 0;
+
+        for i in 0..permutation.len()-1 {
+            let city_origin = permutation.get(i).unwrap();
+            let city_dest = permutation.get(i+1).unwrap();
+            let route = Route{origin: city_origin.to_string(), dest: city_dest.to_string()};
+            
+            dist += *routes.get(&route).unwrap();
+        }
+
+        min_dist = min(dist, min_dist);
+        max_dist = max(dist, max_dist);
+    }
+
     (min_dist, max_dist)
 }
 
-fn get_permutations<T: Clone>(v: Vec<T>) -> Vec<Vec<T>> {
-    match v.len() {
-        0 | 1 => vec![v],
-        2 => {
-            let rev0 = v.get(1).unwrap().clone();
-            let rev1 = v.get(0).unwrap().clone();
-            vec![v, vec![rev0, rev1]]
-        },
-        _ => {
-            let mut permutations = vec![];
-            for i in 0..v.len() {
-                let mut v2 = v.to_vec();
-                v2.swap(0, i);
-                let curr = v2.get(0).unwrap().clone();
-                v2.remove(0);
-                for mut p in get_permutations(v2.to_vec()) {
-                    p.insert(0, curr.clone());
-                    permutations.push(p);
-                }
-            }
-            permutations
-        },
-    }
-}
-
-fn build_map(input: &str) -> (HashMap<Route, u32>, Vec<&str>) {
+fn build_map(input: &str) -> (HashMap<Route, u32>, Vec<String>) {
     let mut routes: HashMap<Route, u32> = HashMap::new();
-    let mut cities: HashSet<&str> = HashSet::new();
+    let mut cities: HashSet<String> = HashSet::new();
+
     for line in input.lines() {
-        let split: Vec<&str> = line.split(" to ").collect();
-        let origin = split[0];
-        let split: Vec<&str> = split[1].split(" = ").collect();
-        let dest = split[0];
-        let dist = split[1].parse::<u32>().unwrap();
-        routes.insert(Route{origin: origin, dest: dest}, dist);
-        routes.insert(Route{origin: dest, dest: origin}, dist);
-        cities.insert(origin);
-        cities.insert(dest);
+        let route = Route::from_str(line, false);
+        routes.insert(route.0, route.1);
+        
+        let route = Route::from_str(line, true);
+        routes.insert(route.0, route.1);        
+    } 
+
+    for route in routes.keys() {
+        cities.insert(route.origin.clone());
     }
-    let mut cs = vec![];
-    for city in cities {
-        cs.push(city);
-    }
+
+    let cs: Vec<String> = cities.iter().cloned().collect();
+
     (routes, cs)
 }
 
@@ -78,7 +85,7 @@ pub fn run(input: &str) -> String {
     let (routes, cities) = build_map(input);
     let range = route_len_range(routes, cities);
 
-    let res = Ok::<u32, u32>(range.0).unwrap().to_string();
+    let res = range.0.to_string();
 
     utils::save_answer(&res, "day9.1");
 
@@ -90,7 +97,7 @@ pub fn run_pt2(input: &str) -> String {
     let (routes, cities) = build_map(input);
     let range = route_len_range(routes, cities);
 
-    let res = Ok::<u32, u32>(range.1).unwrap().to_string();
+    let res = range.1.to_string();
 
     utils::save_answer(&res, "day9.2");
 
@@ -106,7 +113,7 @@ Dublin to Belfast = 141"#;
     let (routes, cities) = build_map(input);
     let range = route_len_range(routes, cities);
 
-    let res = Ok::<u32, u32>(range.0).unwrap();
+    let res = range.0;
 
     assert_eq!(res, 605);
 }
@@ -120,7 +127,7 @@ Dublin to Belfast = 141"#;
     let (routes, cities) = build_map(input);
     let range = route_len_range(routes, cities);
 
-    let res = Ok::<u32, u32>(range.1).unwrap();
+    let res = range.1;
 
     assert_eq!(res, 982);
 }
