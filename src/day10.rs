@@ -1,6 +1,6 @@
 extern crate itertools;
-use itertools::Itertools;
 use crate::utils;
+use itertools::Itertools;
 
 fn look_and_say(n: String) -> String {
     let sequence: String = n

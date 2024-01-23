@@ -1,7 +1,7 @@
 extern crate regex;
+use crate::utils;
 use lazy_static::lazy_static;
 use regex::Regex;
-use crate::utils;
 
 lazy_static! {
     static ref REPLACE_QUOTE_REGEX: Regex = Regex::new(r#"\\""#).unwrap();
