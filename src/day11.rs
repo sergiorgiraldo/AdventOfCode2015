@@ -1,0 +1,100 @@
+extern crate itertools;
+use crate::utils;
+use itertools::Itertools;
+
+fn rotate_password(password: &str) -> String {
+    let mut new_password = String::new();
+    let mut rotating = true;
+
+    for c in password.chars().rev() {
+        let mut new_char = c;
+
+        if rotating {
+            new_char = if c == 'z' {
+                'a'
+            } else {
+                ((c as u8) + 1) as char
+            };
+
+            if new_char != 'a' {
+                rotating = false;
+            }
+        }
+
+        new_password = format!("{}{}", new_char, new_password);
+    }
+
+    new_password
+}
+
+fn is_password_ok(password: &str) -> bool {
+    //no i, o, or l
+    if password.contains('i') || password.contains('o') || password.contains('l') {
+        return false;
+    }
+
+    //at least two different, non-overlapping pairs of letters
+    if password
+        .chars()
+        .group_by(|c| *c)
+        .into_iter()
+        .map(|(key, vals)| (key, vals.count()))
+        .filter(|(_key, vals_count)| *vals_count > 1)
+        .unique()
+        .count()
+        < 2
+    {
+        return false;
+    }
+
+    //one increasing straight of at least three letters
+    let consecutive_triplets = password
+        .chars()
+        .zip(password.chars().skip(1).zip(password.chars().skip(2)))
+        .filter(|c| ((c.0 as u8) + 1 == (c.1).0 as u8) && ((((c.1).0 as u8) + 1) == (c.1).1 as u8))
+        .collect::<Vec<_>>();
+
+    if consecutive_triplets.is_empty() {
+        return false;
+    }
+
+    true
+}
+
+fn get_next_password(input: &str) -> String {
+    let mut new_password = rotate_password(input);
+
+    while !is_password_ok(&new_password) {
+        new_password = rotate_password(&new_password);
+    }
+
+    new_password
+}
+
+#[aoc(day11, part1)]
+pub fn run(input: &str) -> String {
+    let res = get_next_password(input);
+
+    utils::save_answer(&res, "day11.1");
+
+    res
+}
+
+#[aoc(day11, part2)]
+pub fn run_pt2(input: &str) -> String {
+    let res = get_next_password(&run(input));
+
+    utils::save_answer(&res, "day11.2");
+
+    res
+}
+
+#[test]
+fn test_run() {
+    assert!(!is_password_ok("hijklmmn"));
+    assert!(!is_password_ok("abbceffg"));
+    assert!(!is_password_ok("abbcegjk"));
+
+    assert_eq!(get_next_password("abcdefgh"), "abcdffaa");
+    assert_eq!(get_next_password("ghijklmn"), "ghjaabcc");
+}

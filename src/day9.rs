@@ -1,15 +1,15 @@
 extern crate itertools;
+use crate::utils;
+use std::cmp::max;
+use std::cmp::min;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use crate::utils;
-use std::cmp::min;
-use std::cmp::max;
 extern crate permutohedron;
 use permutohedron::LexicalPermutation;
 #[derive(Debug, PartialEq, Eq, Hash)]
 struct Route {
     origin: String,
-    dest: String
+    dest: String,
 }
 
 impl Route {
@@ -21,10 +21,15 @@ impl Route {
         let dist = split[4].parse::<u32>().unwrap();
 
         if round_trip {
-            (Route{origin: dest, dest: origin}, dist)
-        }
-        else{
-            (Route{origin, dest}, dist)
+            (
+                Route {
+                    origin: dest,
+                    dest: origin,
+                },
+                dist,
+            )
+        } else {
+            (Route { origin, dest }, dist)
         }
     }
 }
@@ -44,11 +49,14 @@ fn route_len_range(routes: HashMap<Route, u32>, mut cities: Vec<String>) -> (u32
     for permutation in permutations {
         let mut dist = 0;
 
-        for i in 0..permutation.len()-1 {
+        for i in 0..permutation.len() - 1 {
             let city_origin = permutation.get(i).unwrap();
-            let city_dest = permutation.get(i+1).unwrap();
-            let route = Route{origin: city_origin.to_string(), dest: city_dest.to_string()};
-            
+            let city_dest = permutation.get(i + 1).unwrap();
+            let route = Route {
+                origin: city_origin.to_string(),
+                dest: city_dest.to_string(),
+            };
+
             dist += *routes.get(&route).unwrap();
         }
 
@@ -66,10 +74,10 @@ fn build_map(input: &str) -> (HashMap<Route, u32>, Vec<String>) {
     input.lines().for_each(|line| {
         let route = Route::from_str(line, false);
         routes.insert(route.0, route.1);
-        
+
         let route = Route::from_str(line, true);
-        routes.insert(route.0, route.1);        
-    }); 
+        routes.insert(route.0, route.1);
+    });
 
     routes.keys().for_each(|route| {
         cities.insert(route.origin.clone());
