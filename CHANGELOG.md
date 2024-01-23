@@ -1,5 +1,16 @@
 # Changelog
 
+## [10.0.0](https://github.com/sergiorgiraldo/AdventOfCode2015/compare/v9.0.0...v10.0.0) (2024-01-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* day 11 completed
+
+### Features
+
+* day 11 completed ([38611f0](https://github.com/sergiorgiraldo/AdventOfCode2015/commit/38611f01fc7eb338d4ff3254f54a4016ff361e04))
+
 ## [9.0.0](https://github.com/sergiorgiraldo/AdventOfCode2015/compare/v8.0.0...v9.0.0) (2024-01-22)
 
 
