@@ -1,5 +1,12 @@
 #!/bin/sh
 
+if cargo test -q; then
+    :
+else
+    echo "Tests failed"
+    exit 1
+fi    
+
 git add --all . 
 
 git commit -S -m 'feat!: day '"$1"' completed'
