@@ -1,7 +1,6 @@
 use std::cmp::max;
 use std::ops::{Add, Mul};
 use crate::utils;
-
 #[derive(Clone, Debug)]
 struct Ingredient {
     name: String,
@@ -133,6 +132,8 @@ pub fn run(input: &str) -> String {
 
     utils::save_answer(&res, "day15.1");
 
+    utils::submit_answer(2015, 15, "1", &res);
+
     res
 }
 
@@ -141,6 +142,8 @@ pub fn run_pt2(input: &str) -> String {
     let res = find_optimal_recipe(input, Some(500)).to_string();
 
     utils::save_answer(&res, "day15.2");
+
+    utils::submit_answer(2015, 15, "2", &res);
 
     res
 }
