@@ -32,6 +32,11 @@ impl Reindeer {
         }
     }
 
+    //rest_cicle=0 & speed_cicle > 0 -> initial state, resting = false
+    //rest_cicle=0 & speed_cicle > 0 -> speeding up
+    //rest_cicle=0 & speed_cicle = 0 -> resting, initiate rest_cicle
+    //rest_cicle > 0 -> resting, decrease rest_cicle
+    //resting & rest_cicle = 2 -> prepare to speed again in next cycle, initiate speed_cicle
     fn fly(&mut self) {
         if self.resting {
             if self.rest_cicle == 2 {
