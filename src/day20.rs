@@ -5,13 +5,13 @@ use crate::utils;
 pub fn run(input: &str) -> String {
     let mut res:String = "".to_string();
 
-    let input_int: usize = match input.trim().parse() {
+    let input_int: u64 = match input.trim().parse() {
         Ok(num) => num,
         Err(_) => return "Invalid input".to_string(),
     };
 
     for house_nr in 1..input_int {
-        if presents_at1(house_nr.try_into().unwrap()) >= input_int.try_into().unwrap() {
+        if presents_at1(house_nr) >= input_int {
             res = house_nr.to_string();
             break
         }
@@ -26,13 +26,13 @@ pub fn run(input: &str) -> String {
 pub fn run_pt2(input: &str) -> String {
     let mut res:String = "".to_string();
 
-    let input_int: usize = match input.trim().parse() {
+    let input_int: u64 = match input.trim().parse() {
         Ok(num) => num,
         Err(_) => return "Invalid input".to_string(),
     };
 
     for house_nr in 1..input_int {
-        if presents_at2(house_nr.try_into().unwrap()) >= input_int.try_into().unwrap() {
+        if presents_at2(house_nr) >= input_int {
             res = house_nr.to_string();
             break
         }
