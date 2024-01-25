@@ -48,8 +48,6 @@ fn route_len_range(routes: HashMap<Route, u32>, cities: Vec<String>) -> (u32, u3
             break;
         }
     }
-    print!("{} cities\n", cities2.len());
-    print!("{} permutations\n", permutations.len());
 
     for permutation in permutations {
         let mut dist = 0;
