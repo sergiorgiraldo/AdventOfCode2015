@@ -34,17 +34,16 @@ impl Route {
     }
 }
 
-fn route_len_range(routes: HashMap<Route, u32>, cities: Vec<String>) -> (u32, u32) {
+fn route_len_range(routes: HashMap<Route, u32>, mut cities: Vec<String>) -> (u32, u32) {
     let mut permutations = Vec::new(); //permutohedron
     let mut min_dist = u32::max_value();
     let mut max_dist = 0;
 
-    let mut cities2 = cities.clone();
-    cities2.sort(); //permutohedron gives you the next "ordered permutation", so I need to force the sort
+    cities.sort(); //permutohedron gives the next "ordered permutation", so I need to force the sort
 
     loop {
-        permutations.push(cities2.to_vec());
-        if !cities2.next_permutation() {
+        permutations.push(cities.to_vec());
+        if !cities.next_permutation() {
             break;
         }
     }
