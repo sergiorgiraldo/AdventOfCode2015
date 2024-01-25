@@ -6,7 +6,7 @@ My solutions to [Advent of Code 2015](https://adventofcode.com/2015) done in [Ru
 
 ![](https://img.shields.io/badge/day%20📅-24-blue)
  
-![](https://img.shields.io/badge/stars%20⭐-36-yellow)
+![](https://img.shields.io/badge/stars%20⭐-40-yellow)
 
 # Automation
 
