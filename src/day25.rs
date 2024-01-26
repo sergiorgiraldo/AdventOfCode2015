@@ -1,29 +1,45 @@
 use crate::utils;
 use regex::Regex;
 
-fn code_at(row: i128, col: i128) -> i128 {
+/*
+filled in the diagonal upwards starting from position (1, 1), like this
+start in (diagonal, 1) and end in (1, diagonal)
+
+   | 1   2   3   4   5   6  
+---+---+---+---+---+---+---+
+ 1 |  1   3   6  10  15  21
+ 2 |  2   5   9  14  20
+ 3 |  4   8  13  19
+ 4 |  7  12  18
+ 5 | 11  17
+ 6 | 16
+
+*/
+fn code_at(row_target: i128, col_target: i128) -> i128 {
     let mut diagonal = 2;
-    let mut last = 20_151_125;
+    
+    let mut last = 20_151_125; //got from the puzzle, value at (1,1)
 
     loop {
-        let mut r = diagonal;
-        let mut c = 1;
+        let mut row = diagonal;
+        let mut col = 1;
 
-        while c <= diagonal {
-            last = (last * 252_533) % 33_554_393;
+        while col <= diagonal {
+            last = (last * 252_533) % 33_554_393; //rule from the puzzle
 
-            if r == row && c == col {
+            if row == row_target && col == col_target {
                 return last;
             }
 
-            r -= 1;
-            c += 1;
+            row -= 1;
+            col += 1;
         }
+
         diagonal += 1;
     }
 }
 
-fn get_instructions(input: &str) -> Vec<i128> {
+fn get_instructions(input: &str) -> (i128, i128) {
     let re = Regex::new(r"row (\d+), column (\d+)").unwrap();
 
     let caps = re.captures(input).expect("No matches found");
@@ -31,16 +47,34 @@ fn get_instructions(input: &str) -> Vec<i128> {
     let row: u32 = caps.get(1).unwrap().as_str().parse().expect("Not a valid number");
     let column: u32 = caps.get(2).unwrap().as_str().parse().expect("Not a valid number");
 
-    vec![row as i128, column as i128]
+    (row as i128, column as i128)
 }
 
 #[aoc(day25, part1)]
 pub fn run(input: &str) -> String {
     let instructions = get_instructions(input);
-    
-    let res = code_at(instructions[0], instructions[1]).to_string();
+
+    let res = code_at(instructions.0, instructions.1).to_string();
 
     utils::solve(2015, 25, "1", &res);
 
     res
 }
+
+#[test]
+fn test() {
+    assert_eq!(code_at(2, 1), 31916031);
+    assert_eq!(code_at(2, 2), 21629792);
+    assert_eq!(code_at(2, 3), 16929656);
+    assert_eq!(code_at(2, 4), 7726640);
+    assert_eq!(code_at(2, 5), 15514188);
+    assert_eq!(code_at(2, 6), 4041754);
+
+    assert_eq!(code_at(6, 1), 33071741);
+    assert_eq!(code_at(6, 2), 6796745);
+    assert_eq!(code_at(6, 3), 25397450);
+    assert_eq!(code_at(6, 4), 24659492);
+    assert_eq!(code_at(6, 5), 1534922);
+    assert_eq!(code_at(6, 6), 27995004);
+}
+            

@@ -6,14 +6,14 @@ use aoc_bud::Aoc;
 pub fn save_answer(ans: &str, part: &str) {
     let curr_path = get_current_working_dir();
 
-    let ans_path = Path::new(&curr_path) // /Users/GK47LX/source/AdventOfCode2015/target/aoc/aoc-autobuild/
-        .parent() // /Users/GK47LX/source/AdventOfCode2015/target/aoc/
+    let ans_path = Path::new(&curr_path) // source/AdventOfCode2015/target/aoc/aoc-autobuild/
+        .parent() // source/AdventOfCode2015/target/aoc/
         .unwrap()
-        .parent() // /Users/GK47LX/source/AdventOfCode2015/target/
+        .parent() // source/AdventOfCode2015/target/
         .unwrap()
-        .parent() // /Users/GK47LX/source/AdventOfCode2015/
+        .parent() // source/AdventOfCode2015/
         .unwrap()
-        .join("ans"); // /Users/GK47LX/source/AdventOfCode2015/ans/
+        .join("ans"); // source/AdventOfCode2015/ans/
 
     let file_path = ans_path.join(format!("{}.txt", part));
 
