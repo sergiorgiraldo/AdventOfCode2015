@@ -71,7 +71,7 @@ fn register_mfcsam_message(input: &[&str]) -> MFCSAMMessage {
     message
 }
 
-fn match_aunt(aunts: &Aunts, mfcsam_message: &MFCSAMMessage) -> Option<Aunt> {
+fn match_aunt_exact(aunts: &Aunts, mfcsam_message: &MFCSAMMessage) -> Option<Aunt> {
     aunts
         .iter()
         .find(|aunt| {
@@ -94,7 +94,7 @@ fn match_aunt(aunts: &Aunts, mfcsam_message: &MFCSAMMessage) -> Option<Aunt> {
         .cloned()
 }
 
-fn match_aunt_exact(aunts: &Aunts, mfcsam_message: &MFCSAMMessage) -> Option<Aunt> {
+fn match_aunt_by_range(aunts: &Aunts, mfcsam_message: &MFCSAMMessage) -> Option<Aunt> {
     aunts
         .iter()
         .find(|aunt| {
@@ -131,13 +131,27 @@ fn match_aunt_exact(aunts: &Aunts, mfcsam_message: &MFCSAMMessage) -> Option<Aun
         .cloned()
 }
 
-#[aoc(day16, part1)]
-pub fn run(input: &str) -> String {
+struct Setup{
+    aunts: Aunts, 
+    mfcsam_message: MFCSAMMessage
+}
+
+fn setup_crime_scene(input: &str) -> Setup {
     let aunts = register_aunts(&input.lines().collect::<Vec<_>>());
 
     let mfcsam_message = register_mfcsam_message(&MFCSAM_MESSAGE.lines().collect::<Vec<_>>());
-    
-    let res = match_aunt(&aunts, &mfcsam_message).unwrap()["number"].to_string();
+
+    Setup {
+        aunts,
+        mfcsam_message
+    }
+}
+
+#[aoc(day16, part1)]
+pub fn run(input: &str) -> String {
+    let setup = setup_crime_scene(input);
+
+    let res = match_aunt_exact(&setup.aunts, &setup.mfcsam_message).unwrap()["number"].to_string();
 
     utils::solve(2015, 16, "1", &res);
 
@@ -146,13 +160,13 @@ pub fn run(input: &str) -> String {
 
 #[aoc(day16, part2)]
 pub fn run_pt2(input: &str) -> String {
-    let aunts = register_aunts(&input.lines().collect::<Vec<_>>());
-
-    let mfcsam_message = register_mfcsam_message(&MFCSAM_MESSAGE.lines().collect::<Vec<_>>());
+    let setup = setup_crime_scene(input);
     
-    let res = match_aunt_exact(&aunts, &mfcsam_message).unwrap()["number"].to_string();
+    let res = match_aunt_by_range(&setup.aunts, &setup.mfcsam_message).unwrap()["number"].to_string();
 
     utils::solve(2015, 16, "2", &res);
 
     res
 }
+
+//no tests this day ¯\_(ツ)_/¯

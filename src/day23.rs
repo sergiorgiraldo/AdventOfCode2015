@@ -18,6 +18,14 @@ impl Register {
     }
 }
 
+/*
+`hlf r` sets register r to half its current value, then continues with the next instruction.
+`tpl r`` sets register r to triple its current value, then continues with the next instruction.
+`inc r`` increments register r, adding 1 to it, then continues with the next instruction.
+`jmp offset` is a jump; it continues with the instruction offset away relative to itself.
+`jie r, offset` is like jmp, but only jumps if register r is even ("jump if even").
+`jio r, offset is like jmp, but only jumps if register r is 1 ("jump if one", not odd).
+*/
 #[derive(Debug)]
 enum Instruction {
     Hlf(Register),
@@ -61,51 +69,51 @@ fn execute_program(input: &str, initial_a_value: i64, initial_b_value: i64) -> (
         (Register::B, initial_b_value),
     ]);
 
-    let mut ci: i64 = 0;
+    let mut curr_instruction: i64 = 0;
 
     loop {
-        let instruction = &program_instructions[ci as usize];
+        let instruction = &program_instructions[curr_instruction as usize];
 
-        let mut new_ci: i64 = ci;
+        let mut new_instruction: i64 = curr_instruction;
 
         match instruction {
             Instruction::Hlf(reg) => {
                 *registers.get_mut(reg).unwrap() = registers[reg] / 2;
-                new_ci += 1;
+                new_instruction += 1;
             }
             Instruction::Tpl(reg) => {
                 *registers.get_mut(reg).unwrap() = registers[reg] * 3;
-                new_ci += 1;
+                new_instruction += 1;
             }
             Instruction::Inc(reg) => {
                 *registers.get_mut(reg).unwrap() = registers[reg] + 1;
-                new_ci += 1;
+                new_instruction += 1;
             }
             Instruction::Jmp(ins) => {
-                new_ci += *ins;
+                new_instruction += *ins;
             }
             Instruction::Jie(reg, ins) => {
                 if registers[reg] % 2 == 0 {
-                    new_ci += *ins;
+                    new_instruction += *ins;
                 } else {
-                    new_ci += 1;
+                    new_instruction += 1;
                 }
             }
             Instruction::Jio(reg, ins) => {
                 if registers[reg] == 1 {
-                    new_ci += *ins;
+                    new_instruction += *ins;
                 } else {
-                    new_ci += 1;
+                    new_instruction += 1;
                 }
             }
             _ => {}
         }
 
-        if new_ci < 0 || new_ci >= program_instructions.len() as i64 {
+        if new_instruction < 0 || new_instruction >= program_instructions.len() as i64 {
             break;
         }
 
-        ci = new_ci;
+        curr_instruction = new_instruction;
     }
 
     (registers[&Register::A], registers[&Register::B])
@@ -113,7 +121,7 @@ fn execute_program(input: &str, initial_a_value: i64, initial_b_value: i64) -> (
 
 #[aoc(day23, part1)]
 pub fn run(input: &str) -> String {
-    let res = execute_program(&input, 0, 0).1.to_string();
+    let res = execute_program(&input, 0, 0).1.to_string(); //register B
 
     utils::solve(2015, 23, "1", &res);
 
@@ -122,7 +130,7 @@ pub fn run(input: &str) -> String {
 
 #[aoc(day23, part2)]
 pub fn run_pt2(input: &str) -> String {
-    let res = execute_program(&input, 1, 0).1.to_string();
+    let res = execute_program(&input, 1, 0).1.to_string(); //register B
 
     utils::solve(2015, 23, "2", &res);
 
@@ -139,8 +147,7 @@ tpl a
 inc a"#,
             0,
             0
-        )
-        .0,
+        ).0, //register A
         2
     );
 }

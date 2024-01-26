@@ -234,3 +234,26 @@ pub fn run_pt2(input: &str) -> String {
 
     res   
 }
+
+#[test]
+fn test() {
+    assert_eq!(
+        (0..BEST_OF)
+        .collect::<Vec<i32>>()
+        .par_iter()
+        .filter_map(|_| fight(10, 250, 13, 8, false))
+        .min()
+        .expect("played Poison + Magic Missile"), 
+        226
+    );
+
+    assert_eq!(
+        (0..BEST_OF)
+        .collect::<Vec<i32>>()
+        .par_iter()
+        .filter_map(|_| fight(10, 250, 14, 8, false))
+        .min()
+        .expect("played Recharge + Shield + Drain + Poison + Magic Missile"), 
+        641
+    );
+}
