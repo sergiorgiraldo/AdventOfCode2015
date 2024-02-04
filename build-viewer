@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+from pathlib import Path
+
+if __name__ == "__main__":
+
+    if len(sys.argv) != 2:
+        print("usage: build-viewer {day}")
+        exit(1)
+
+    print("Building viewer for day {}...".format(sys.argv[1]))
+
+    __day = sys.argv[1]
+    __filename = os.path.join("src", f"day{__day}.rs")
+    contents_script = Path(__filename).read_text()
+
+    __index = os.path.join("viewer", "index.html")
+    contents_index = Path(__index).read_text()
+    link_day = "<a href='" + f"day{__day}.html" + "'>" + f"Day {__day}" + "</a><br />" + "\n" + "<!--NEXT-->"
+    contents_index = contents_index.replace("<!--NEXT-->", link_day)
+    Path(__index).write_text(contents_index)
+
+    __page = os.path.join("viewer", f"day{__day}.html")
+    contents_day = "<style>pre{font-size: large;}</style>\n"
+    contents_day += "<h1>Day " + __day + "</h1>\n"
+    contents_day += "<pre>\n" + contents_script + "\n</pre>"
+    Path(__page).write_text(contents_day)
+
