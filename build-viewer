@@ -24,6 +24,12 @@ if __name__ == "__main__":
 
     __page = os.path.join("viewer", f"day{__day}.html")
     contents_day = "<style>pre{font-size: large;}</style>\n"
+    contents_day += "<script src=\"script.js\"></script>\n"
+    contents_day += "<div id=\"navigation\">\n"
+    contents_day += "<button onclick=\"navigateTo('prev')\">Previous Day</button>\n"
+    contents_day += "<button onclick=\"navigateTo('next')\">Next Day</button>\n"
+    contents_day += "</div>\n"
+
     contents_day += "<h1>Day " + __day + "</h1>\n"
     contents_day += "<pre>\n" + contents_script + "\n</pre>"
     Path(__page).write_text(contents_day)

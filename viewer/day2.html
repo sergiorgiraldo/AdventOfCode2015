@@ -1,4 +1,9 @@
 <style>pre{font-size: large;}</style>
+<script src="script.js"></script>
+<div id="navigation">
+<button onclick="navigateTo('prev')">Previous Day</button>
+<button onclick="navigateTo('next')">Next Day</button>
+</div>
 <h1>Day 2</h1>
 <pre>
 extern crate itertools;
@@ -35,7 +40,7 @@ impl From<&str> for Gift {
     }
 }
 
-fn compute_wapping_paper(input: &str) -> u32 {
+fn compute_wrapping_paper(input: &str) -> u32 {
     let gifts: Vec<Gift> = input.lines().map(|g| g.into()).collect();
 
     gifts
@@ -65,7 +70,7 @@ fn compute_ribbon(input: &str) -> u32 {
 
 #[aoc(day2, part1)]
 pub fn run(input: &str) -> String {
-    let res = compute_wapping_paper(input).to_string();
+    let res = compute_wrapping_paper(input).to_string();
 
     utils::save_answer(&res, "day2.1");
 
@@ -83,8 +88,8 @@ pub fn run_pt2(input: &str) -> String {
 
 #[test]
 fn test_run() {
-    assert_eq!(compute_wapping_paper("2x3x4"), 58);
-    assert_eq!(compute_wapping_paper("1x1x10"), 43);
+    assert_eq!(compute_wrapping_paper("2x3x4"), 58);
+    assert_eq!(compute_wrapping_paper("1x1x10"), 43);
 }
 
 #[test]
