@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,92 +34,92 @@
 </div>
 <h1>Day 20</h1>
 <pre>
-use std::iter::FromIterator;
-use crate::utils;
-
-#[aoc(day20, part1)]
-pub fn run(input: &str) -> String {
-    let mut res:String = "".to_string();
-
-    let input_int: u64 = match input.trim().parse() {
-        Ok(num) => num,
-        Err(_) => return "Invalid input".to_string(),
-    };
-
-    for house_nr in 1..input_int {
-        if presents_at1(house_nr) >= input_int {
-            res = house_nr.to_string();
-            break
-        }
-    }
-
-    utils::solve(2015, 20, "1", &res);
-
-    res
-}
-
-#[aoc(day20, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let mut res:String = "".to_string();
-
-    let input_int: u64 = match input.trim().parse() {
-        Ok(num) => num,
-        Err(_) => return "Invalid input".to_string(),
-    };
-
-    for house_nr in 1..input_int {
-        if presents_at2(house_nr) >= input_int {
-            res = house_nr.to_string();
-            break
-        }
-    }
-
-    utils::solve(2015, 20, "2", &res);
-
-    res
-}
-
-fn presents_at1(house_nr: u64) -> u64 {
-    divisors(house_nr)
-        .into_iter()
-        .sum::<u64>() * 10
-}
-
-fn presents_at2(house_nr: u64) -> u64 {
-    divisors(house_nr)
-        .into_iter()
-        .filter(|d| house_nr / d <= 50)
-        .sum::<u64>()
-        * 11
-}
-
-fn divisors(n: u64) -> Vec<u64> {
-    let mut small_divisors: Vec<u64> = Vec::from_iter(1..((n as f64).sqrt() as u64 + 1))
-        .into_iter()
-        .filter(|i| n % *i == 0)
-        .collect();
-
-    let mut large_divisors: Vec<u64> = small_divisors
-        .iter()
-        .filter(|d| n != **d * **d)
-        .map(|d| n / d)
-        .collect();
-
-    small_divisors.append(&mut large_divisors);
-    small_divisors
-}
-
-#[test]
-fn test_get_house1_presents() {
-    assert_eq!(presents_at1(1), 10);
-    assert_eq!(presents_at1(2), 30);
-    assert_eq!(presents_at1(3), 40);
-    assert_eq!(presents_at1(4), 70);
-    assert_eq!(presents_at1(5), 60);
-    assert_eq!(presents_at1(6), 120);
-    assert_eq!(presents_at1(7), 80);
-    assert_eq!(presents_at1(8), 150);
-    assert_eq!(presents_at1(9), 130);
-}
-
+<span>use std::iter::FromIterator;</span>
+<span>use crate::utils;</span>
+<span></span>
+<span>#[aoc(day20, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let mut res:String = "".to_string();</span>
+<span></span>
+<span>    let input_int: u64 = match input.trim().parse() {</span>
+<span>        Ok(num) => num,</span>
+<span>        Err(_) => return "Invalid input".to_string(),</span>
+<span>    };</span>
+<span></span>
+<span>    for house_nr in 1..input_int {</span>
+<span>        if presents_at1(house_nr) >= input_int {</span>
+<span>            res = house_nr.to_string();</span>
+<span>            break</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    utils::solve(2015, 20, "1", &res);</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day20, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let mut res:String = "".to_string();</span>
+<span></span>
+<span>    let input_int: u64 = match input.trim().parse() {</span>
+<span>        Ok(num) => num,</span>
+<span>        Err(_) => return "Invalid input".to_string(),</span>
+<span>    };</span>
+<span></span>
+<span>    for house_nr in 1..input_int {</span>
+<span>        if presents_at2(house_nr) >= input_int {</span>
+<span>            res = house_nr.to_string();</span>
+<span>            break</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    utils::solve(2015, 20, "2", &res);</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>fn presents_at1(house_nr: u64) -> u64 {</span>
+<span>    divisors(house_nr)</span>
+<span>        .into_iter()</span>
+<span>        .sum::<u64>() * 10</span>
+<span>}</span>
+<span></span>
+<span>fn presents_at2(house_nr: u64) -> u64 {</span>
+<span>    divisors(house_nr)</span>
+<span>        .into_iter()</span>
+<span>        .filter(|d| house_nr / d <= 50)</span>
+<span>        .sum::<u64>()</span>
+<span>        * 11</span>
+<span>}</span>
+<span></span>
+<span>fn divisors(n: u64) -> Vec<u64> {</span>
+<span>    let mut small_divisors: Vec<u64> = Vec::from_iter(1..((n as f64).sqrt() as u64 + 1))</span>
+<span>        .into_iter()</span>
+<span>        .filter(|i| n % *i == 0)</span>
+<span>        .collect();</span>
+<span></span>
+<span>    let mut large_divisors: Vec<u64> = small_divisors</span>
+<span>        .iter()</span>
+<span>        .filter(|d| n != **d * **d)</span>
+<span>        .map(|d| n / d)</span>
+<span>        .collect();</span>
+<span></span>
+<span>    small_divisors.append(&mut large_divisors);</span>
+<span>    small_divisors</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_get_house1_presents() {</span>
+<span>    assert_eq!(presents_at1(1), 10);</span>
+<span>    assert_eq!(presents_at1(2), 30);</span>
+<span>    assert_eq!(presents_at1(3), 40);</span>
+<span>    assert_eq!(presents_at1(4), 70);</span>
+<span>    assert_eq!(presents_at1(5), 60);</span>
+<span>    assert_eq!(presents_at1(6), 120);</span>
+<span>    assert_eq!(presents_at1(7), 80);</span>
+<span>    assert_eq!(presents_at1(8), 150);</span>
+<span>    assert_eq!(presents_at1(9), 130);</span>
+<span>}</span>
+<span></span>
 </pre>

@@ -23,7 +23,35 @@ if __name__ == "__main__":
     Path(__index).write_text(contents_index)
 
     __page = os.path.join("viewer", f"day{__day}.html")
-    contents_day = "<style>pre{font-size: large;}</style>\n"
+    contents_day = """<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>\n"""
     contents_day += "<script src=\"script.js\"></script>\n"
     contents_day += "<div id=\"navigation\">\n"
     contents_day += "<button onclick=\"navigateTo('prev')\">Previous Day</button>\n"
@@ -31,6 +59,9 @@ if __name__ == "__main__":
     contents_day += "</div>\n"
 
     contents_day += "<h1>Day " + __day + "</h1>\n"
+    lines = contents_script.split('\n') 
+    wrapped_lines = [f'<span>{line}</span>' for line in lines]
+    contents_script = '\n'.join(wrapped_lines)
     contents_day += "<pre>\n" + contents_script + "\n</pre>"
     Path(__page).write_text(contents_day)
 

@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,162 +34,162 @@
 </div>
 <h1>Day 14</h1>
 <pre>
-use crate::utils;
-
-const RACE_LOOPS: i32 = 2503;
-
-struct Reindeer {
-    speed: i32,
-    speed_seconds: i32,
-    rest: i32,
-    speed_cicle: i32,
-    rest_cicle: i32,
-    distance: i32,
-    resting: bool,
-    score: i32,
-}
-
-impl Reindeer {
-    fn from_str(s: &str) -> Self {
-        let words: Vec<&str> = s.split_whitespace().collect();
-        let speed = words[3].parse::<i32>().unwrap();
-        let speed_seconds = words[6].parse::<i32>().unwrap();
-        let rest = words[13].parse::<i32>().unwrap();
-
-        Self {
-            speed,
-            speed_seconds,
-            rest,
-            speed_cicle: speed_seconds,
-            rest_cicle: 0,
-            distance: 0,
-            resting: false,
-            score: 0,
-        }
-    }
-
-    //rest_cicle=0 & speed_cicle > 0 -> initial state, resting = false
-    //rest_cicle=0 & speed_cicle > 0 -> speeding up
-    //rest_cicle=0 & speed_cicle = 0 -> resting, initiate rest_cicle
-    //rest_cicle > 0 -> resting, decrease rest_cicle
-    //resting & rest_cicle = 2 -> prepare to speed again in next cycle, initiate speed_cicle
-    fn fly(&mut self) {
-        if self.resting {
-            if self.rest_cicle == 2 {
-                self.speed_cicle = self.speed_seconds;
-                self.resting = false;
-            } else {
-                self.rest_cicle -= 1;
-            }
-        } else if self.speed_cicle == 0 {
-            self.rest_cicle = self.rest;
-            self.resting = true;
-        } else {
-            self.speed_cicle -= 1;
-            self.distance += self.speed;
-        }
-    }
-}
-
-fn race_with_score(reindeers: &mut Vec<Reindeer>, rounds: i32) -> i32 {
-    for _ in 0..rounds {
-        for reindeer in reindeers.iter_mut() {
-            reindeer.fly();
-        }
-
-        reindeers.sort_by_key(|r| -r.distance);
-        let top_distance = reindeers[0].distance;
-
-        for reindeer in reindeers.iter_mut() {
-            if reindeer.distance == top_distance {
-                reindeer.score += 1;
-            }
-        }
-    }
-
-    let winning_reindeer = reindeers.iter().max_by_key(|r| r.score).unwrap();
-    
-    winning_reindeer.score
-}
-
-#[aoc(day14, part1)]
-pub fn run(input: &str) -> String {
-    let mut reindeers: Vec<_> = input.lines().map(Reindeer::from_str).collect();
-
-    for _ in 0..RACE_LOOPS {
-        for reindeer in reindeers.iter_mut() {
-            reindeer.fly();
-        }
-    }
-
-    let winning_reindeer = reindeers.iter().max_by_key(|r| r.distance).unwrap();
-    
-    let res = winning_reindeer.distance.to_string();
-
-    utils::save_answer(&res, "day14.1");
-
-    res
-}
-
-#[aoc(day14, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let mut reindeers: Vec<_> = input.lines().map(Reindeer::from_str).collect();
-
-    let res = race_with_score(&mut reindeers, RACE_LOOPS).to_string();
-
-    utils::save_answer(&res, "day14.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    let input = r#"Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.
-Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds."#;
-
-    let mut reindeers: Vec<_> = input.lines().map(Reindeer::from_str).collect();
-
-    for reindeer in reindeers.iter_mut() {
-        reindeer.fly();
-    }
-
-    assert_eq!(reindeers[0].distance, 14);
-    assert_eq!(reindeers[1].distance, 16);
-
-    for _ in 0..9 {
-        for reindeer in reindeers.iter_mut() {
-            reindeer.fly();
-        }
-    }
-
-    assert_eq!(reindeers[0].distance, 140);
-    assert_eq!(reindeers[1].distance, 160);
-
-    for reindeer in reindeers.iter_mut() {
-        reindeer.fly();
-    }
-
-    assert_eq!(reindeers[0].distance, 140);
-    assert_eq!(reindeers[1].distance, 176);
-
-    for _ in 0..988 {
-        for reindeer in reindeers.iter_mut() {
-            reindeer.fly();
-        }
-    }
-
-    assert_eq!(reindeers[0].distance, 1120);
-    assert_eq!(reindeers[1].distance, 1056);
-}
-
-#[test]
-fn test_run_pt2() {
-    let input = r#"Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.
-Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds."#;
-
-    let mut reindeers: Vec<_> = input.lines().map(Reindeer::from_str).collect();
-
-    assert_eq!(race_with_score(&mut reindeers, 1000), 689);
-}
-
+<span>use crate::utils;</span>
+<span></span>
+<span>const RACE_LOOPS: i32 = 2503;</span>
+<span></span>
+<span>struct Reindeer {</span>
+<span>    speed: i32,</span>
+<span>    speed_seconds: i32,</span>
+<span>    rest: i32,</span>
+<span>    speed_cicle: i32,</span>
+<span>    rest_cicle: i32,</span>
+<span>    distance: i32,</span>
+<span>    resting: bool,</span>
+<span>    score: i32,</span>
+<span>}</span>
+<span></span>
+<span>impl Reindeer {</span>
+<span>    fn from_str(s: &str) -> Self {</span>
+<span>        let words: Vec<&str> = s.split_whitespace().collect();</span>
+<span>        let speed = words[3].parse::<i32>().unwrap();</span>
+<span>        let speed_seconds = words[6].parse::<i32>().unwrap();</span>
+<span>        let rest = words[13].parse::<i32>().unwrap();</span>
+<span></span>
+<span>        Self {</span>
+<span>            speed,</span>
+<span>            speed_seconds,</span>
+<span>            rest,</span>
+<span>            speed_cicle: speed_seconds,</span>
+<span>            rest_cicle: 0,</span>
+<span>            distance: 0,</span>
+<span>            resting: false,</span>
+<span>            score: 0,</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    //rest_cicle=0 & speed_cicle > 0 -> initial state, resting = false</span>
+<span>    //rest_cicle=0 & speed_cicle > 0 -> speeding up</span>
+<span>    //rest_cicle=0 & speed_cicle = 0 -> resting, initiate rest_cicle</span>
+<span>    //rest_cicle > 0 -> resting, decrease rest_cicle</span>
+<span>    //resting & rest_cicle = 2 -> prepare to speed again in next cycle, initiate speed_cicle</span>
+<span>    fn fly(&mut self) {</span>
+<span>        if self.resting {</span>
+<span>            if self.rest_cicle == 2 {</span>
+<span>                self.speed_cicle = self.speed_seconds;</span>
+<span>                self.resting = false;</span>
+<span>            } else {</span>
+<span>                self.rest_cicle -= 1;</span>
+<span>            }</span>
+<span>        } else if self.speed_cicle == 0 {</span>
+<span>            self.rest_cicle = self.rest;</span>
+<span>            self.resting = true;</span>
+<span>        } else {</span>
+<span>            self.speed_cicle -= 1;</span>
+<span>            self.distance += self.speed;</span>
+<span>        }</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>fn race_with_score(reindeers: &mut Vec<Reindeer>, rounds: i32) -> i32 {</span>
+<span>    for _ in 0..rounds {</span>
+<span>        for reindeer in reindeers.iter_mut() {</span>
+<span>            reindeer.fly();</span>
+<span>        }</span>
+<span></span>
+<span>        reindeers.sort_by_key(|r| -r.distance);</span>
+<span>        let top_distance = reindeers[0].distance;</span>
+<span></span>
+<span>        for reindeer in reindeers.iter_mut() {</span>
+<span>            if reindeer.distance == top_distance {</span>
+<span>                reindeer.score += 1;</span>
+<span>            }</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    let winning_reindeer = reindeers.iter().max_by_key(|r| r.score).unwrap();</span>
+<span>    </span>
+<span>    winning_reindeer.score</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day14, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let mut reindeers: Vec<_> = input.lines().map(Reindeer::from_str).collect();</span>
+<span></span>
+<span>    for _ in 0..RACE_LOOPS {</span>
+<span>        for reindeer in reindeers.iter_mut() {</span>
+<span>            reindeer.fly();</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    let winning_reindeer = reindeers.iter().max_by_key(|r| r.distance).unwrap();</span>
+<span>    </span>
+<span>    let res = winning_reindeer.distance.to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day14.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day14, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let mut reindeers: Vec<_> = input.lines().map(Reindeer::from_str).collect();</span>
+<span></span>
+<span>    let res = race_with_score(&mut reindeers, RACE_LOOPS).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day14.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    let input = r#"Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.</span>
+<span>Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds."#;</span>
+<span></span>
+<span>    let mut reindeers: Vec<_> = input.lines().map(Reindeer::from_str).collect();</span>
+<span></span>
+<span>    for reindeer in reindeers.iter_mut() {</span>
+<span>        reindeer.fly();</span>
+<span>    }</span>
+<span></span>
+<span>    assert_eq!(reindeers[0].distance, 14);</span>
+<span>    assert_eq!(reindeers[1].distance, 16);</span>
+<span></span>
+<span>    for _ in 0..9 {</span>
+<span>        for reindeer in reindeers.iter_mut() {</span>
+<span>            reindeer.fly();</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    assert_eq!(reindeers[0].distance, 140);</span>
+<span>    assert_eq!(reindeers[1].distance, 160);</span>
+<span></span>
+<span>    for reindeer in reindeers.iter_mut() {</span>
+<span>        reindeer.fly();</span>
+<span>    }</span>
+<span></span>
+<span>    assert_eq!(reindeers[0].distance, 140);</span>
+<span>    assert_eq!(reindeers[1].distance, 176);</span>
+<span></span>
+<span>    for _ in 0..988 {</span>
+<span>        for reindeer in reindeers.iter_mut() {</span>
+<span>            reindeer.fly();</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    assert_eq!(reindeers[0].distance, 1120);</span>
+<span>    assert_eq!(reindeers[1].distance, 1056);</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run_pt2() {</span>
+<span>    let input = r#"Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.</span>
+<span>Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds."#;</span>
+<span></span>
+<span>    let mut reindeers: Vec<_> = input.lines().map(Reindeer::from_str).collect();</span>
+<span></span>
+<span>    assert_eq!(race_with_score(&mut reindeers, 1000), 689);</span>
+<span>}</span>
+<span></span>
 </pre>

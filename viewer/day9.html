@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,149 +34,149 @@
 </div>
 <h1>Day 9</h1>
 <pre>
-extern crate itertools;
-use crate::utils;
-use std::cmp::max;
-use std::cmp::min;
-use std::collections::HashMap;
-use std::collections::HashSet;
-extern crate permutohedron;
-use permutohedron::LexicalPermutation;
-#[derive(Debug, PartialEq, Eq, Hash)]
-struct Route {
-    origin: String,
-    dest: String,
-}
-
-impl Route {
-    //London to Dublin = 464
-    fn from_str(s: &str, round_trip: bool) -> (Self, u32) {
-        let split: Vec<&str> = s.split(" ").collect();
-        let origin = split[0].to_string();
-        let dest = split[2].to_string();
-        let dist = split[4].parse::<u32>().unwrap();
-
-        if round_trip {
-            (
-                Route {
-                    origin: dest,
-                    dest: origin,
-                },
-                dist,
-            )
-        } else {
-            (Route { origin, dest }, dist)
-        }
-    }
-}
-
-fn route_len_range(routes: HashMap<Route, u32>, mut cities: Vec<String>) -> (u32, u32) {
-    let mut permutations = Vec::new(); //permutohedron
-    let mut min_dist = u32::max_value();
-    let mut max_dist = 0;
-
-    cities.sort(); //permutohedron gives the next "ordered permutation", so I need to force the sort
-
-    loop {
-        permutations.push(cities.to_vec());
-        if !cities.next_permutation() {
-            break;
-        }
-    }
-
-    for permutation in permutations {
-        let mut dist = 0;
-
-        for i in 0..permutation.len() - 1 {
-            let city_origin = permutation.get(i).unwrap();
-            let city_dest = permutation.get(i + 1).unwrap();
-            let route = Route {
-                origin: city_origin.to_string(),
-                dest: city_dest.to_string(),
-            };
-
-            dist += *routes.get(&route).unwrap();
-        }
-
-        min_dist = min(dist, min_dist);
-        max_dist = max(dist, max_dist);
-    }
-
-    (min_dist, max_dist)
-}
-
-fn build_map(input: &str) -> (HashMap<Route, u32>, Vec<String>) {
-    let mut routes: HashMap<Route, u32> = HashMap::new();
-    let mut cities: HashSet<String> = HashSet::new();
-
-    input.lines().for_each(|line| {
-        let route = Route::from_str(line, false);
-        routes.insert(route.0, route.1);
-
-        let route = Route::from_str(line, true);
-        routes.insert(route.0, route.1);
-    });
-
-    routes.keys().for_each(|route| {
-        cities.insert(route.origin.clone());
-        cities.insert(route.dest.clone());
-    });
-
-    let cs: Vec<String> = cities.iter().cloned().collect();
-
-    (routes, cs)
-}
-
-#[aoc(day9, part1)]
-pub fn run(input: &str) -> String {
-    let (routes, cities) = build_map(input);
-    let range = route_len_range(routes, cities);
-
-    let res = range.0.to_string();
-
-    utils::save_answer(&res, "day9.1");
-
-    res
-}
-
-#[aoc(day9, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let (routes, cities) = build_map(input);
-    let range = route_len_range(routes, cities);
-
-    let res = range.1.to_string();
-
-    utils::save_answer(&res, "day9.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    let input = r#"London to Dublin = 464
-London to Belfast = 518
-Dublin to Belfast = 141"#;
-
-    let (routes, cities) = build_map(input);
-    let range = route_len_range(routes, cities);
-
-    let res = range.0;
-
-    assert_eq!(res, 605);
-}
-
-#[test]
-fn test_run_pt2() {
-    let input = r#"London to Dublin = 464
-London to Belfast = 518
-Dublin to Belfast = 141"#;
-
-    let (routes, cities) = build_map(input);
-    let range = route_len_range(routes, cities);
-
-    let res = range.1;
-
-    assert_eq!(res, 982);
-}
-
+<span>extern crate itertools;</span>
+<span>use crate::utils;</span>
+<span>use std::cmp::max;</span>
+<span>use std::cmp::min;</span>
+<span>use std::collections::HashMap;</span>
+<span>use std::collections::HashSet;</span>
+<span>extern crate permutohedron;</span>
+<span>use permutohedron::LexicalPermutation;</span>
+<span>#[derive(Debug, PartialEq, Eq, Hash)]</span>
+<span>struct Route {</span>
+<span>    origin: String,</span>
+<span>    dest: String,</span>
+<span>}</span>
+<span></span>
+<span>impl Route {</span>
+<span>    //London to Dublin = 464</span>
+<span>    fn from_str(s: &str, round_trip: bool) -> (Self, u32) {</span>
+<span>        let split: Vec<&str> = s.split(" ").collect();</span>
+<span>        let origin = split[0].to_string();</span>
+<span>        let dest = split[2].to_string();</span>
+<span>        let dist = split[4].parse::<u32>().unwrap();</span>
+<span></span>
+<span>        if round_trip {</span>
+<span>            (</span>
+<span>                Route {</span>
+<span>                    origin: dest,</span>
+<span>                    dest: origin,</span>
+<span>                },</span>
+<span>                dist,</span>
+<span>            )</span>
+<span>        } else {</span>
+<span>            (Route { origin, dest }, dist)</span>
+<span>        }</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>fn route_len_range(routes: HashMap<Route, u32>, mut cities: Vec<String>) -> (u32, u32) {</span>
+<span>    let mut permutations = Vec::new(); //permutohedron</span>
+<span>    let mut min_dist = u32::max_value();</span>
+<span>    let mut max_dist = 0;</span>
+<span></span>
+<span>    cities.sort(); //permutohedron gives the next "ordered permutation", so I need to force the sort</span>
+<span></span>
+<span>    loop {</span>
+<span>        permutations.push(cities.to_vec());</span>
+<span>        if !cities.next_permutation() {</span>
+<span>            break;</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    for permutation in permutations {</span>
+<span>        let mut dist = 0;</span>
+<span></span>
+<span>        for i in 0..permutation.len() - 1 {</span>
+<span>            let city_origin = permutation.get(i).unwrap();</span>
+<span>            let city_dest = permutation.get(i + 1).unwrap();</span>
+<span>            let route = Route {</span>
+<span>                origin: city_origin.to_string(),</span>
+<span>                dest: city_dest.to_string(),</span>
+<span>            };</span>
+<span></span>
+<span>            dist += *routes.get(&route).unwrap();</span>
+<span>        }</span>
+<span></span>
+<span>        min_dist = min(dist, min_dist);</span>
+<span>        max_dist = max(dist, max_dist);</span>
+<span>    }</span>
+<span></span>
+<span>    (min_dist, max_dist)</span>
+<span>}</span>
+<span></span>
+<span>fn build_map(input: &str) -> (HashMap<Route, u32>, Vec<String>) {</span>
+<span>    let mut routes: HashMap<Route, u32> = HashMap::new();</span>
+<span>    let mut cities: HashSet<String> = HashSet::new();</span>
+<span></span>
+<span>    input.lines().for_each(|line| {</span>
+<span>        let route = Route::from_str(line, false);</span>
+<span>        routes.insert(route.0, route.1);</span>
+<span></span>
+<span>        let route = Route::from_str(line, true);</span>
+<span>        routes.insert(route.0, route.1);</span>
+<span>    });</span>
+<span></span>
+<span>    routes.keys().for_each(|route| {</span>
+<span>        cities.insert(route.origin.clone());</span>
+<span>        cities.insert(route.dest.clone());</span>
+<span>    });</span>
+<span></span>
+<span>    let cs: Vec<String> = cities.iter().cloned().collect();</span>
+<span></span>
+<span>    (routes, cs)</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day9, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let (routes, cities) = build_map(input);</span>
+<span>    let range = route_len_range(routes, cities);</span>
+<span></span>
+<span>    let res = range.0.to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day9.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day9, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let (routes, cities) = build_map(input);</span>
+<span>    let range = route_len_range(routes, cities);</span>
+<span></span>
+<span>    let res = range.1.to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day9.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    let input = r#"London to Dublin = 464</span>
+<span>London to Belfast = 518</span>
+<span>Dublin to Belfast = 141"#;</span>
+<span></span>
+<span>    let (routes, cities) = build_map(input);</span>
+<span>    let range = route_len_range(routes, cities);</span>
+<span></span>
+<span>    let res = range.0;</span>
+<span></span>
+<span>    assert_eq!(res, 605);</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run_pt2() {</span>
+<span>    let input = r#"London to Dublin = 464</span>
+<span>London to Belfast = 518</span>
+<span>Dublin to Belfast = 141"#;</span>
+<span></span>
+<span>    let (routes, cities) = build_map(input);</span>
+<span>    let range = route_len_range(routes, cities);</span>
+<span></span>
+<span>    let res = range.1;</span>
+<span></span>
+<span>    assert_eq!(res, 982);</span>
+<span>}</span>
+<span></span>
 </pre>

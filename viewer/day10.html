@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,56 +34,56 @@
 </div>
 <h1>Day 10</h1>
 <pre>
-extern crate itertools;
-use crate::utils;
-use itertools::Itertools;
-
-fn look_and_say(n: String) -> String {
-    let sequence: String = n
-        .to_string()
-        .chars()
-        .group_by(|c| *c)
-        .into_iter()
-        .map(|(key, val)| format!("{}{}", val.count(), key))
-        .collect();
-
-    sequence
-}
-
-fn get_sequence(input: String, range: u32) -> String {
-    let mut conway_sequence = input.to_string();
-
-    for _ in 0..range {
-        conway_sequence = look_and_say(conway_sequence);
-    }
-
-    conway_sequence.to_string().chars().count().to_string()
-}
-
-#[aoc(day10, part1)]
-pub fn run(input: &str) -> String {
-    let res = get_sequence(input.to_string(), 40);
-
-    utils::save_answer(&res, "day10.1");
-
-    res
-}
-
-#[aoc(day10, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let res = get_sequence(input.to_string(), 50);
-
-    utils::save_answer(&res, "day10.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    assert_eq!(look_and_say("1".to_string()), "11");
-    assert_eq!(look_and_say("11".to_string()), "21");
-    assert_eq!(look_and_say("21".to_string()), "1211");
-    assert_eq!(look_and_say("111221".to_string()), "312211");
-}
-
+<span>extern crate itertools;</span>
+<span>use crate::utils;</span>
+<span>use itertools::Itertools;</span>
+<span></span>
+<span>fn look_and_say(n: String) -> String {</span>
+<span>    let sequence: String = n</span>
+<span>        .to_string()</span>
+<span>        .chars()</span>
+<span>        .group_by(|c| *c)</span>
+<span>        .into_iter()</span>
+<span>        .map(|(key, val)| format!("{}{}", val.count(), key))</span>
+<span>        .collect();</span>
+<span></span>
+<span>    sequence</span>
+<span>}</span>
+<span></span>
+<span>fn get_sequence(input: String, range: u32) -> String {</span>
+<span>    let mut conway_sequence = input.to_string();</span>
+<span></span>
+<span>    for _ in 0..range {</span>
+<span>        conway_sequence = look_and_say(conway_sequence);</span>
+<span>    }</span>
+<span></span>
+<span>    conway_sequence.to_string().chars().count().to_string()</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day10, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let res = get_sequence(input.to_string(), 40);</span>
+<span></span>
+<span>    utils::save_answer(&res, "day10.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day10, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let res = get_sequence(input.to_string(), 50);</span>
+<span></span>
+<span>    utils::save_answer(&res, "day10.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    assert_eq!(look_and_say("1".to_string()), "11");</span>
+<span>    assert_eq!(look_and_say("11".to_string()), "21");</span>
+<span>    assert_eq!(look_and_say("21".to_string()), "1211");</span>
+<span>    assert_eq!(look_and_say("111221".to_string()), "312211");</span>
+<span>}</span>
+<span></span>
 </pre>

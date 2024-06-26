@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,68 +34,68 @@
 </div>
 <h1>Day 1</h1>
 <pre>
-use crate::utils;
-
-const UP_CHAR: &char = &'(';
-const DOWN_CHAR: &char = &')';
-
-fn compute_floor(input: &str) -> i32 {
-    let ups = input.chars().filter(|c| c == UP_CHAR).count() as i32;
-    let downs = input.chars().filter(|c| c == DOWN_CHAR).count() as i32;
-
-    ups - downs
-}
-
-fn find_basement_step(input: &str) -> usize {
-    let mut current_floor: i32 = 0;
-
-    for (idx, c) in input.chars().enumerate() {
-        current_floor += if c == *UP_CHAR { 1 } else { -1 };
-        if current_floor == -1 {
-            return idx + 1;
-        }
-    }
-
-    0
-}
-
-#[aoc(day1, part1)]
-fn run(input: &str) -> String {
-    let res = compute_floor(input).to_string();
-
-    utils::save_answer(&res, "day1.1");
-
-    res
-}
-
-#[aoc(day1, part2)]
-fn run_pt2(input: &str) -> String {
-    let res = find_basement_step(input).to_string();
-
-    utils::save_answer(&res, "day1.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    assert_eq!(compute_floor("(())"), 0);
-    assert_eq!(compute_floor("()()"), 0);
-    assert_eq!(compute_floor("((("), 3);
-    assert_eq!(compute_floor("(()(()("), 3);
-    assert_eq!(compute_floor("))((((("), 3);
-    assert_eq!(compute_floor("())"), -1);
-    assert_eq!(compute_floor("())"), -1);
-    assert_eq!(compute_floor("))("), -1);
-    assert_eq!(compute_floor(")))"), -3);
-    assert_eq!(compute_floor(")))"), -3);
-    assert_eq!(compute_floor(")())())"), -3);
-}
-
-#[test]
-fn test_run_pt2() {
-    assert_eq!(find_basement_step(")"), 1);
-    assert_eq!(find_basement_step("()())"), 5);
-}
-
+<span>use crate::utils;</span>
+<span></span>
+<span>const UP_CHAR: &char = &'(';</span>
+<span>const DOWN_CHAR: &char = &')';</span>
+<span></span>
+<span>fn compute_floor(input: &str) -> i32 {</span>
+<span>    let ups = input.chars().filter(|c| c == UP_CHAR).count() as i32;</span>
+<span>    let downs = input.chars().filter(|c| c == DOWN_CHAR).count() as i32;</span>
+<span></span>
+<span>    ups - downs</span>
+<span>}</span>
+<span></span>
+<span>fn find_basement_step(input: &str) -> usize {</span>
+<span>    let mut current_floor: i32 = 0;</span>
+<span></span>
+<span>    for (idx, c) in input.chars().enumerate() {</span>
+<span>        current_floor += if c == *UP_CHAR { 1 } else { -1 };</span>
+<span>        if current_floor == -1 {</span>
+<span>            return idx + 1;</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    0</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day1, part1)]</span>
+<span>fn run(input: &str) -> String {</span>
+<span>    let res = compute_floor(input).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day1.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day1, part2)]</span>
+<span>fn run_pt2(input: &str) -> String {</span>
+<span>    let res = find_basement_step(input).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day1.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    assert_eq!(compute_floor("(())"), 0);</span>
+<span>    assert_eq!(compute_floor("()()"), 0);</span>
+<span>    assert_eq!(compute_floor("((("), 3);</span>
+<span>    assert_eq!(compute_floor("(()(()("), 3);</span>
+<span>    assert_eq!(compute_floor("))((((("), 3);</span>
+<span>    assert_eq!(compute_floor("())"), -1);</span>
+<span>    assert_eq!(compute_floor("())"), -1);</span>
+<span>    assert_eq!(compute_floor("))("), -1);</span>
+<span>    assert_eq!(compute_floor(")))"), -3);</span>
+<span>    assert_eq!(compute_floor(")))"), -3);</span>
+<span>    assert_eq!(compute_floor(")())())"), -3);</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run_pt2() {</span>
+<span>    assert_eq!(find_basement_step(")"), 1);</span>
+<span>    assert_eq!(find_basement_step("()())"), 5);</span>
+<span>}</span>
+<span></span>
 </pre>

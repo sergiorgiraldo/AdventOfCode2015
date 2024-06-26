@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,70 +34,70 @@
 </div>
 <h1>Day 8</h1>
 <pre>
-extern crate regex;
-use crate::utils;
-use lazy_static::lazy_static;
-use regex::Regex;
-
-lazy_static! {
-    static ref REPLACE_QUOTE_REGEX: Regex = Regex::new(r#"\\""#).unwrap();
-    static ref REPLACE_SLASHES_REGEX: Regex = Regex::new(r"\\\\").unwrap();
-    static ref REPLACE_CHAR_REGEX: Regex = Regex::new(r"\\x[0-9a-f]{2}").unwrap(); // ASCII codes
-}
-
-fn count_actual_chars(s: &str) -> i32 {
-    let s = REPLACE_QUOTE_REGEX.replace_all(&s, r#"""#);
-    let s = REPLACE_SLASHES_REGEX.replace_all(&s, r"\");
-    let s = REPLACE_CHAR_REGEX.replace_all(&s, "_"); // replace ASCII codes with single character
-
-    s.chars().count() as i32 - 2 // -2 for the quotes
-}
-
-fn encode_and_count(s: &str) -> i32 {
-    let s = s.replace(r#"\"#, r#"\\"#);
-    let s = s.replace(r#"""#, r#"\""#);
-
-    s.chars().count() as i32 + 2 // +2 for the quotes
-}
-
-#[aoc(day8, part1)]
-pub fn run(input: &str) -> String {
-    let actual_chars: i32 = input.lines().map(|l| count_actual_chars(l)).sum();
-    let raw_chars: i32 = input.lines().map(|l| l.chars().count() as i32).sum();
-
-    let res = (raw_chars - actual_chars).to_string();
-
-    utils::save_answer(&res, "day8.1");
-
-    res
-}
-
-#[aoc(day8, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let new_string_chars: i32 = input.lines().map(|l| encode_and_count(l)).sum();
-    let raw_chars: i32 = input.lines().map(|l| l.chars().count() as i32).sum();
-
-    let res = (new_string_chars - raw_chars).to_string();
-
-    utils::save_answer(&res, "day8.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    assert_eq!(count_actual_chars(r#""""#), 0);
-    assert_eq!(count_actual_chars(r#""abc""#), 3);
-    assert_eq!(count_actual_chars(r#""aaa\"aaa""#), 7);
-    assert_eq!(count_actual_chars(r#""\x27""#), 1);
-}
-
-#[test]
-fn test_run_pt2() {
-    assert_eq!(encode_and_count(r#""""#), 6);
-    assert_eq!(encode_and_count(r#""abc""#), 9);
-    assert_eq!(encode_and_count(r#""aaa\"aaa""#), 16);
-    assert_eq!(encode_and_count(r#""\x27""#), 11);
-}
-
+<span>extern crate regex;</span>
+<span>use crate::utils;</span>
+<span>use lazy_static::lazy_static;</span>
+<span>use regex::Regex;</span>
+<span></span>
+<span>lazy_static! {</span>
+<span>    static ref REPLACE_QUOTE_REGEX: Regex = Regex::new(r#"\\""#).unwrap();</span>
+<span>    static ref REPLACE_SLASHES_REGEX: Regex = Regex::new(r"\\\\").unwrap();</span>
+<span>    static ref REPLACE_CHAR_REGEX: Regex = Regex::new(r"\\x[0-9a-f]{2}").unwrap(); // ASCII codes</span>
+<span>}</span>
+<span></span>
+<span>fn count_actual_chars(s: &str) -> i32 {</span>
+<span>    let s = REPLACE_QUOTE_REGEX.replace_all(&s, r#"""#);</span>
+<span>    let s = REPLACE_SLASHES_REGEX.replace_all(&s, r"\");</span>
+<span>    let s = REPLACE_CHAR_REGEX.replace_all(&s, "_"); // replace ASCII codes with single character</span>
+<span></span>
+<span>    s.chars().count() as i32 - 2 // -2 for the quotes</span>
+<span>}</span>
+<span></span>
+<span>fn encode_and_count(s: &str) -> i32 {</span>
+<span>    let s = s.replace(r#"\"#, r#"\\"#);</span>
+<span>    let s = s.replace(r#"""#, r#"\""#);</span>
+<span></span>
+<span>    s.chars().count() as i32 + 2 // +2 for the quotes</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day8, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let actual_chars: i32 = input.lines().map(|l| count_actual_chars(l)).sum();</span>
+<span>    let raw_chars: i32 = input.lines().map(|l| l.chars().count() as i32).sum();</span>
+<span></span>
+<span>    let res = (raw_chars - actual_chars).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day8.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day8, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let new_string_chars: i32 = input.lines().map(|l| encode_and_count(l)).sum();</span>
+<span>    let raw_chars: i32 = input.lines().map(|l| l.chars().count() as i32).sum();</span>
+<span></span>
+<span>    let res = (new_string_chars - raw_chars).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day8.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    assert_eq!(count_actual_chars(r#""""#), 0);</span>
+<span>    assert_eq!(count_actual_chars(r#""abc""#), 3);</span>
+<span>    assert_eq!(count_actual_chars(r#""aaa\"aaa""#), 7);</span>
+<span>    assert_eq!(count_actual_chars(r#""\x27""#), 1);</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run_pt2() {</span>
+<span>    assert_eq!(encode_and_count(r#""""#), 6);</span>
+<span>    assert_eq!(encode_and_count(r#""abc""#), 9);</span>
+<span>    assert_eq!(encode_and_count(r#""aaa\"aaa""#), 16);</span>
+<span>    assert_eq!(encode_and_count(r#""\x27""#), 11);</span>
+<span>}</span>
+<span></span>
 </pre>

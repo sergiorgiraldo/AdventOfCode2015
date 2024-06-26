@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,105 +34,105 @@
 </div>
 <h1>Day 11</h1>
 <pre>
-extern crate itertools;
-use crate::utils;
-use itertools::Itertools;
-
-fn rotate_password(password: &str) -> String {
-    let mut new_password = String::new();
-    let mut rotating = true;
-
-    for c in password.chars().rev() {
-        let mut new_char = c;
-
-        if rotating {
-            new_char = if c == 'z' {
-                'a'
-            } else {
-                ((c as u8) + 1) as char
-            };
-
-            if new_char != 'a' {
-                rotating = false;
-            }
-        }
-
-        new_password = format!("{}{}", new_char, new_password);
-    }
-
-    new_password
-}
-
-fn is_password_ok(password: &str) -> bool {
-    //no i, o, or l
-    if password.contains('i') || password.contains('o') || password.contains('l') {
-        return false;
-    }
-
-    //at least two different, non-overlapping pairs of letters
-    if password
-        .chars()
-        .group_by(|c| *c)
-        .into_iter()
-        .map(|(key, vals)| (key, vals.count()))
-        .filter(|(_key, vals_count)| *vals_count > 1)
-        .unique()
-        .count()
-        < 2
-    {
-        return false;
-    }
-
-    //one increasing straight of at least three letters
-    let consecutive_triplets = password
-        .chars()
-        .zip(password.chars().skip(1).zip(password.chars().skip(2)))
-        .filter(|c| ((c.0 as u8) + 1 == (c.1).0 as u8) && ((((c.1).0 as u8) + 1) == (c.1).1 as u8))
-        .collect::<Vec<_>>();
-
-    if consecutive_triplets.is_empty() {
-        return false;
-    }
-
-    true
-}
-
-fn get_next_password(input: &str) -> String {
-    let mut new_password = rotate_password(input);
-
-    while !is_password_ok(&new_password) {
-        new_password = rotate_password(&new_password);
-    }
-
-    new_password
-}
-
-#[aoc(day11, part1)]
-pub fn run(input: &str) -> String {
-    let res = get_next_password(input);
-
-    utils::save_answer(&res, "day11.1");
-
-    res
-}
-
-#[aoc(day11, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let res = get_next_password(&run(input));
-
-    utils::save_answer(&res, "day11.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    assert!(!is_password_ok("hijklmmn"));
-    assert!(!is_password_ok("abbceffg"));
-    assert!(!is_password_ok("abbcegjk"));
-
-    assert_eq!(get_next_password("abcdefgh"), "abcdffaa");
-    assert_eq!(get_next_password("ghijklmn"), "ghjaabcc");
-}
-
+<span>extern crate itertools;</span>
+<span>use crate::utils;</span>
+<span>use itertools::Itertools;</span>
+<span></span>
+<span>fn rotate_password(password: &str) -> String {</span>
+<span>    let mut new_password = String::new();</span>
+<span>    let mut rotating = true;</span>
+<span></span>
+<span>    for c in password.chars().rev() {</span>
+<span>        let mut new_char = c;</span>
+<span></span>
+<span>        if rotating {</span>
+<span>            new_char = if c == 'z' {</span>
+<span>                'a'</span>
+<span>            } else {</span>
+<span>                ((c as u8) + 1) as char</span>
+<span>            };</span>
+<span></span>
+<span>            if new_char != 'a' {</span>
+<span>                rotating = false;</span>
+<span>            }</span>
+<span>        }</span>
+<span></span>
+<span>        new_password = format!("{}{}", new_char, new_password);</span>
+<span>    }</span>
+<span></span>
+<span>    new_password</span>
+<span>}</span>
+<span></span>
+<span>fn is_password_ok(password: &str) -> bool {</span>
+<span>    //no i, o, or l</span>
+<span>    if password.contains('i') || password.contains('o') || password.contains('l') {</span>
+<span>        return false;</span>
+<span>    }</span>
+<span></span>
+<span>    //at least two different, non-overlapping pairs of letters</span>
+<span>    if password</span>
+<span>        .chars()</span>
+<span>        .group_by(|c| *c)</span>
+<span>        .into_iter()</span>
+<span>        .map(|(key, vals)| (key, vals.count()))</span>
+<span>        .filter(|(_key, vals_count)| *vals_count > 1)</span>
+<span>        .unique()</span>
+<span>        .count()</span>
+<span>        < 2</span>
+<span>    {</span>
+<span>        return false;</span>
+<span>    }</span>
+<span></span>
+<span>    //one increasing straight of at least three letters</span>
+<span>    let consecutive_triplets = password</span>
+<span>        .chars()</span>
+<span>        .zip(password.chars().skip(1).zip(password.chars().skip(2)))</span>
+<span>        .filter(|c| ((c.0 as u8) + 1 == (c.1).0 as u8) && ((((c.1).0 as u8) + 1) == (c.1).1 as u8))</span>
+<span>        .collect::<Vec<_>>();</span>
+<span></span>
+<span>    if consecutive_triplets.is_empty() {</span>
+<span>        return false;</span>
+<span>    }</span>
+<span></span>
+<span>    true</span>
+<span>}</span>
+<span></span>
+<span>fn get_next_password(input: &str) -> String {</span>
+<span>    let mut new_password = rotate_password(input);</span>
+<span></span>
+<span>    while !is_password_ok(&new_password) {</span>
+<span>        new_password = rotate_password(&new_password);</span>
+<span>    }</span>
+<span></span>
+<span>    new_password</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day11, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let res = get_next_password(input);</span>
+<span></span>
+<span>    utils::save_answer(&res, "day11.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day11, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let res = get_next_password(&run(input));</span>
+<span></span>
+<span>    utils::save_answer(&res, "day11.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    assert!(!is_password_ok("hijklmmn"));</span>
+<span>    assert!(!is_password_ok("abbceffg"));</span>
+<span>    assert!(!is_password_ok("abbcegjk"));</span>
+<span></span>
+<span>    assert_eq!(get_next_password("abcdefgh"), "abcdffaa");</span>
+<span>    assert_eq!(get_next_password("ghijklmn"), "ghjaabcc");</span>
+<span>}</span>
+<span></span>
 </pre>

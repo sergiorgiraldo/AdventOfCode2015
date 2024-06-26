@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,95 +34,95 @@
 </div>
 <h1>Day 3</h1>
 <pre>
-use crate::utils;
-use std::collections::HashSet;
-use std::ops::AddAssign;
-
-#[derive(Eq, PartialEq, Hash, Copy, Clone)]
-struct Location(i32, i32);
-
-impl From<char> for Location {
-    fn from(c: char) -> Self {
-        match c {
-            '^' => Self(0, -1),
-            'v' => Self(0, 1),
-            '>' => Self(1, 0),
-            '<' => Self(-1, 0),
-            _ => Self(0, 0),
-        }
-    }
-}
-
-impl AddAssign for Location {
-    fn add_assign(&mut self, rhs: Self) {
-        self.0 += rhs.0;
-        self.1 += rhs.1;
-    }
-}
-
-fn visited_locations(input: &str) -> HashSet<Location> {
-    let mut location = Location(0, 0);
-
-    let mut visited_locations = HashSet::new();
-    visited_locations.insert(Location(0, 0));
-
-    for step in input.chars().into_iter() {
-        let direction = Location::from(step);
-
-        location += direction;
-
-        visited_locations.insert(location);
-    }
-
-    visited_locations
-}
-
-fn santa_deliver(input: &str) -> usize {
-    visited_locations(input).len()
-}
-
-fn santa_robo_deliver(input: &str) -> usize {
-    let santa_instructions: String = input.chars().step_by(2).collect();
-    let robo_instructions: String = input.chars().skip(1).step_by(2).collect();
-
-    let mut santa_locations = visited_locations(&santa_instructions);
-    let robo_locations = visited_locations(&robo_instructions);
-
-    santa_locations.extend(robo_locations);
-
-    santa_locations.len()
-}
-
-#[aoc(day3, part1)]
-pub fn run(input: &str) -> String {
-    let res = santa_deliver(input).to_string();
-
-    utils::save_answer(&res, "day3.1");
-
-    res
-}
-
-#[aoc(day3, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let res = santa_robo_deliver(input).to_string();
-
-    utils::save_answer(&res, "day3.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    assert_eq!(santa_deliver(">"), 2);
-    assert_eq!(santa_deliver("^>v<"), 4);
-    assert_eq!(santa_deliver("^v^v^v^v^v"), 2);
-}
-
-#[test]
-fn test_run_pt2() {
-    assert_eq!(santa_robo_deliver("^v"), 3);
-    assert_eq!(santa_robo_deliver("^>v<"), 3);
-    assert_eq!(santa_robo_deliver("^v^v^v^v^v"), 11);
-}
-
+<span>use crate::utils;</span>
+<span>use std::collections::HashSet;</span>
+<span>use std::ops::AddAssign;</span>
+<span></span>
+<span>#[derive(Eq, PartialEq, Hash, Copy, Clone)]</span>
+<span>struct Location(i32, i32);</span>
+<span></span>
+<span>impl From<char> for Location {</span>
+<span>    fn from(c: char) -> Self {</span>
+<span>        match c {</span>
+<span>            '^' => Self(0, -1),</span>
+<span>            'v' => Self(0, 1),</span>
+<span>            '>' => Self(1, 0),</span>
+<span>            '<' => Self(-1, 0),</span>
+<span>            _ => Self(0, 0),</span>
+<span>        }</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>impl AddAssign for Location {</span>
+<span>    fn add_assign(&mut self, rhs: Self) {</span>
+<span>        self.0 += rhs.0;</span>
+<span>        self.1 += rhs.1;</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>fn visited_locations(input: &str) -> HashSet<Location> {</span>
+<span>    let mut location = Location(0, 0);</span>
+<span></span>
+<span>    let mut visited_locations = HashSet::new();</span>
+<span>    visited_locations.insert(Location(0, 0));</span>
+<span></span>
+<span>    for step in input.chars().into_iter() {</span>
+<span>        let direction = Location::from(step);</span>
+<span></span>
+<span>        location += direction;</span>
+<span></span>
+<span>        visited_locations.insert(location);</span>
+<span>    }</span>
+<span></span>
+<span>    visited_locations</span>
+<span>}</span>
+<span></span>
+<span>fn santa_deliver(input: &str) -> usize {</span>
+<span>    visited_locations(input).len()</span>
+<span>}</span>
+<span></span>
+<span>fn santa_robo_deliver(input: &str) -> usize {</span>
+<span>    let santa_instructions: String = input.chars().step_by(2).collect();</span>
+<span>    let robo_instructions: String = input.chars().skip(1).step_by(2).collect();</span>
+<span></span>
+<span>    let mut santa_locations = visited_locations(&santa_instructions);</span>
+<span>    let robo_locations = visited_locations(&robo_instructions);</span>
+<span></span>
+<span>    santa_locations.extend(robo_locations);</span>
+<span></span>
+<span>    santa_locations.len()</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day3, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let res = santa_deliver(input).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day3.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day3, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let res = santa_robo_deliver(input).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day3.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    assert_eq!(santa_deliver(">"), 2);</span>
+<span>    assert_eq!(santa_deliver("^>v<"), 4);</span>
+<span>    assert_eq!(santa_deliver("^v^v^v^v^v"), 2);</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run_pt2() {</span>
+<span>    assert_eq!(santa_robo_deliver("^v"), 3);</span>
+<span>    assert_eq!(santa_robo_deliver("^>v<"), 3);</span>
+<span>    assert_eq!(santa_robo_deliver("^v^v^v^v^v"), 11);</span>
+<span>}</span>
+<span></span>
 </pre>

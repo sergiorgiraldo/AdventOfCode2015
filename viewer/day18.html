@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,204 +34,204 @@
 </div>
 <h1>Day 18</h1>
 <pre>
-use std::fmt::{Debug, Error, Formatter};
-use crate::utils;
-use std::iter;
-extern crate itertools;
-use itertools::Itertools;
-
-const STEP_COUNT:usize = 100;
-
-#[derive(Clone)]
-struct Grid {
-    data: Vec<bool>,
-    width: usize,
-    height: usize,
-    stuck_lights: Vec<(i32, i32)>,
-}
-
-impl Grid {
-    fn new(width: usize, height: usize, stuck_lights: Vec<(i32, i32)>) -> Self {
-        let mut data: Vec<bool> = vec![];
-        data.extend(iter::repeat(false).take(width * height));
-
-        Self {
-            data,
-            width,
-            height,
-            stuck_lights,
-        }
-    }
-
-    fn from_str(s: &str, stuck_lights: Vec<(i32, i32)>) -> Self {
-        let lines: Vec<_> = s.lines().collect();
-
-        Self {
-            data: lines.join("").chars().map(|c| c == '#').collect(),
-            width: lines[0].len(),
-            height: lines.len(),
-            stuck_lights,
-        }
-    }
-
-    fn in_grid(&self, x: i32, y: i32) -> bool {
-        x >= 0 && y >= 0 && x < self.width as i32 && y < self.height as i32
-    }
-
-    fn get(&self, x: i32, y: i32) -> Option<bool> {
-        if !self.in_grid(x, y) {
-            return None;
-        }
-
-        if self.stuck_lights.contains(&(x, y)) {
-            return Some(true);
-        }
-
-        let pos = (x + (y * self.width as i32)) as usize;
-        self.data.get(pos).cloned()
-    }
-
-    fn set(&mut self, x: i32, y: i32, value: bool) {
-        let pos = (x + y * self.width as i32) as usize;
-
-        if let Some(cell) = self.data.get_mut(pos) {
-            if self.stuck_lights.contains(&(x, y)) {
-                *cell = true;
-            } else {
-                *cell = value;
-            }
-        }
-    }
-/*
-x -1 0 1  y
-   # # # -1
-   # o #  0
-   # # #  1
-*/
-    fn neighbours_on(&self, x: i32, y: i32) -> usize {
-        vec![
-            self.get(x - 1, y - 1),
-            self.get(x, y - 1),
-            self.get(x + 1, y - 1),
-            self.get(x - 1, y),
-            self.get(x + 1, y),
-            self.get(x - 1, y + 1),
-            self.get(x, y + 1),
-            self.get(x + 1, y + 1),
-        ]
-        .into_iter()
-        .filter_map(|n| n)
-        .filter(|n| n.to_owned())
-        .count()
-    }
-
-    fn step(&mut self) {
-        let mut new_grid = Grid::new(self.width, self.height, self.stuck_lights.clone());
-
-        for y in 0..self.height {
-            for x in 0..self.width {
-                let x = x as i32;
-                let y = y as i32;
-
-                let neighbours_on = self.neighbours_on(x, y);
-                
-                /*
-                A light which is on stays on when 2 or 3 neighbors are on, and turns off otherwise.
-                A light which is off turns on if exactly 3 neighbors are on, and stays off otherwise.
-                */
-                if self.get(x, y).unwrap() {
-                    new_grid.set(x, y, neighbours_on == 2 || neighbours_on == 3);
-                } else {
-                    new_grid.set(x, y, neighbours_on == 3);
-                }
-            }
-        }
-
-        *self = new_grid;
-    }
-
-    fn on_lights(&self) -> usize {
-        self.data.iter().filter(|c| c == &&true).count()
-    }
-}
-
-impl Debug for Grid {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        let lines = self
-            .data
-            .chunks(self.width)
-            .map(|chunk| {
-                chunk
-                    .iter()
-                    .cloned()
-                    .map(|c| if c { "#" } else { "." })
-                    .collect::<String>()
-            })
-            .join("\n");
-        write!(f, "{}", lines)
-    }
-}
-
-#[aoc(day18, part1)]
-pub fn run(input: &str) -> String {
-    let mut grid = Grid::from_str(&input, vec![]);
-
-    for _ in 0..STEP_COUNT {
-        grid.step();
-    }
-
-    let res = grid.on_lights().to_string();
-
-    utils::solve(2015, 18, "1", &res);
-
-    res
-}
-
-#[aoc(day18, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let mut grid = Grid::from_str(&input, vec![(0, 0), (99, 0), (0, 99), (99, 99)]);
-
-    for _ in 0..STEP_COUNT {
-        grid.step();
-    }
-
-    let res = grid.on_lights().to_string();
-
-    utils::solve(2015, 18, "2", &res);
-
-    res
-}
-
-#[test]
-fn test_run() {
-    const TEST_GRID: &str = r#".#.#.#
-...##.
-#....#
-..#...
-#.#..#
-####.."#;
-    let mut grid = Grid::from_str(TEST_GRID, vec![]);
-    for _ in 0..4 {
-        grid.step();
-    }
-
-    assert_eq!(grid.on_lights(), 4);
-}
-
-#[test]
-fn test_run_pt2() {
-    const TEST_GRID: &str = r#".#.#.#
-...##.
-#....#
-..#...
-#.#..#
-####.."#;
-    let mut grid = Grid::from_str(TEST_GRID, vec![(0, 0), (5, 0), (0, 5), (5, 5)]);
-    for _ in 0..5 {
-        grid.step();
-    }
-
-    assert_eq!(grid.on_lights(), 17);
-}
-
+<span>use std::fmt::{Debug, Error, Formatter};</span>
+<span>use crate::utils;</span>
+<span>use std::iter;</span>
+<span>extern crate itertools;</span>
+<span>use itertools::Itertools;</span>
+<span></span>
+<span>const STEP_COUNT:usize = 100;</span>
+<span></span>
+<span>#[derive(Clone)]</span>
+<span>struct Grid {</span>
+<span>    data: Vec<bool>,</span>
+<span>    width: usize,</span>
+<span>    height: usize,</span>
+<span>    stuck_lights: Vec<(i32, i32)>,</span>
+<span>}</span>
+<span></span>
+<span>impl Grid {</span>
+<span>    fn new(width: usize, height: usize, stuck_lights: Vec<(i32, i32)>) -> Self {</span>
+<span>        let mut data: Vec<bool> = vec![];</span>
+<span>        data.extend(iter::repeat(false).take(width * height));</span>
+<span></span>
+<span>        Self {</span>
+<span>            data,</span>
+<span>            width,</span>
+<span>            height,</span>
+<span>            stuck_lights,</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    fn from_str(s: &str, stuck_lights: Vec<(i32, i32)>) -> Self {</span>
+<span>        let lines: Vec<_> = s.lines().collect();</span>
+<span></span>
+<span>        Self {</span>
+<span>            data: lines.join("").chars().map(|c| c == '#').collect(),</span>
+<span>            width: lines[0].len(),</span>
+<span>            height: lines.len(),</span>
+<span>            stuck_lights,</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    fn in_grid(&self, x: i32, y: i32) -> bool {</span>
+<span>        x >= 0 && y >= 0 && x < self.width as i32 && y < self.height as i32</span>
+<span>    }</span>
+<span></span>
+<span>    fn get(&self, x: i32, y: i32) -> Option<bool> {</span>
+<span>        if !self.in_grid(x, y) {</span>
+<span>            return None;</span>
+<span>        }</span>
+<span></span>
+<span>        if self.stuck_lights.contains(&(x, y)) {</span>
+<span>            return Some(true);</span>
+<span>        }</span>
+<span></span>
+<span>        let pos = (x + (y * self.width as i32)) as usize;</span>
+<span>        self.data.get(pos).cloned()</span>
+<span>    }</span>
+<span></span>
+<span>    fn set(&mut self, x: i32, y: i32, value: bool) {</span>
+<span>        let pos = (x + y * self.width as i32) as usize;</span>
+<span></span>
+<span>        if let Some(cell) = self.data.get_mut(pos) {</span>
+<span>            if self.stuck_lights.contains(&(x, y)) {</span>
+<span>                *cell = true;</span>
+<span>            } else {</span>
+<span>                *cell = value;</span>
+<span>            }</span>
+<span>        }</span>
+<span>    }</span>
+<span>/*</span>
+<span>x -1 0 1  y</span>
+<span>   # # # -1</span>
+<span>   # o #  0</span>
+<span>   # # #  1</span>
+<span>*/</span>
+<span>    fn neighbours_on(&self, x: i32, y: i32) -> usize {</span>
+<span>        vec![</span>
+<span>            self.get(x - 1, y - 1),</span>
+<span>            self.get(x, y - 1),</span>
+<span>            self.get(x + 1, y - 1),</span>
+<span>            self.get(x - 1, y),</span>
+<span>            self.get(x + 1, y),</span>
+<span>            self.get(x - 1, y + 1),</span>
+<span>            self.get(x, y + 1),</span>
+<span>            self.get(x + 1, y + 1),</span>
+<span>        ]</span>
+<span>        .into_iter()</span>
+<span>        .filter_map(|n| n)</span>
+<span>        .filter(|n| n.to_owned())</span>
+<span>        .count()</span>
+<span>    }</span>
+<span></span>
+<span>    fn step(&mut self) {</span>
+<span>        let mut new_grid = Grid::new(self.width, self.height, self.stuck_lights.clone());</span>
+<span></span>
+<span>        for y in 0..self.height {</span>
+<span>            for x in 0..self.width {</span>
+<span>                let x = x as i32;</span>
+<span>                let y = y as i32;</span>
+<span></span>
+<span>                let neighbours_on = self.neighbours_on(x, y);</span>
+<span>                </span>
+<span>                /*</span>
+<span>                A light which is on stays on when 2 or 3 neighbors are on, and turns off otherwise.</span>
+<span>                A light which is off turns on if exactly 3 neighbors are on, and stays off otherwise.</span>
+<span>                */</span>
+<span>                if self.get(x, y).unwrap() {</span>
+<span>                    new_grid.set(x, y, neighbours_on == 2 || neighbours_on == 3);</span>
+<span>                } else {</span>
+<span>                    new_grid.set(x, y, neighbours_on == 3);</span>
+<span>                }</span>
+<span>            }</span>
+<span>        }</span>
+<span></span>
+<span>        *self = new_grid;</span>
+<span>    }</span>
+<span></span>
+<span>    fn on_lights(&self) -> usize {</span>
+<span>        self.data.iter().filter(|c| c == &&true).count()</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>impl Debug for Grid {</span>
+<span>    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {</span>
+<span>        let lines = self</span>
+<span>            .data</span>
+<span>            .chunks(self.width)</span>
+<span>            .map(|chunk| {</span>
+<span>                chunk</span>
+<span>                    .iter()</span>
+<span>                    .cloned()</span>
+<span>                    .map(|c| if c { "#" } else { "." })</span>
+<span>                    .collect::<String>()</span>
+<span>            })</span>
+<span>            .join("\n");</span>
+<span>        write!(f, "{}", lines)</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day18, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let mut grid = Grid::from_str(&input, vec![]);</span>
+<span></span>
+<span>    for _ in 0..STEP_COUNT {</span>
+<span>        grid.step();</span>
+<span>    }</span>
+<span></span>
+<span>    let res = grid.on_lights().to_string();</span>
+<span></span>
+<span>    utils::solve(2015, 18, "1", &res);</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day18, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let mut grid = Grid::from_str(&input, vec![(0, 0), (99, 0), (0, 99), (99, 99)]);</span>
+<span></span>
+<span>    for _ in 0..STEP_COUNT {</span>
+<span>        grid.step();</span>
+<span>    }</span>
+<span></span>
+<span>    let res = grid.on_lights().to_string();</span>
+<span></span>
+<span>    utils::solve(2015, 18, "2", &res);</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    const TEST_GRID: &str = r#".#.#.#</span>
+<span>...##.</span>
+<span>#....#</span>
+<span>..#...</span>
+<span>#.#..#</span>
+<span>####.."#;</span>
+<span>    let mut grid = Grid::from_str(TEST_GRID, vec![]);</span>
+<span>    for _ in 0..4 {</span>
+<span>        grid.step();</span>
+<span>    }</span>
+<span></span>
+<span>    assert_eq!(grid.on_lights(), 4);</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run_pt2() {</span>
+<span>    const TEST_GRID: &str = r#".#.#.#</span>
+<span>...##.</span>
+<span>#....#</span>
+<span>..#...</span>
+<span>#.#..#</span>
+<span>####.."#;</span>
+<span>    let mut grid = Grid::from_str(TEST_GRID, vec![(0, 0), (5, 0), (0, 5), (5, 5)]);</span>
+<span>    for _ in 0..5 {</span>
+<span>        grid.step();</span>
+<span>    }</span>
+<span></span>
+<span>    assert_eq!(grid.on_lights(), 17);</span>
+<span>}</span>
+<span></span>
 </pre>

@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,169 +34,169 @@
 </div>
 <h1>Day 6</h1>
 <pre>
-extern crate regex;
-use crate::utils;
-use lazy_static::lazy_static;
-use regex::Regex;
-use std::cmp::max;
-use std::iter;
-
-const GRID_SIZE: (usize, usize) = (1_000, 1_000);
-
-lazy_static! {
-    static ref INSTRUCTION_REGEX: Regex =
-        Regex::new(r"^(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)$").unwrap();
-}
-
-enum Switch {
-    On,
-    Off,
-    Toggle,
-}
-
-struct Instruction {
-    operation: Switch,
-    from: (usize, usize),
-    to: (usize, usize),
-}
-
-impl Instruction {
-    fn from_str(s: &str) -> Self {
-        let caps: Vec<_> = INSTRUCTION_REGEX
-            .captures(s)
-            .expect("Cannot parse one of the instructions")
-            .iter()
-            .map(|c| c.expect("Cannot parse one of the instructions").as_str())
-            .skip(1)
-            .collect();
-
-        let operation = match caps[0] {
-            "turn on" => Switch::On,
-            "turn off" => Switch::Off,
-            _ => Switch::Toggle,
-        };
-        let from = (
-            caps[1].parse::<usize>().unwrap(),
-            caps[2].parse::<usize>().unwrap(),
-        );
-        let to = (
-            caps[3].parse::<usize>().unwrap(),
-            caps[4].parse::<usize>().unwrap(),
-        );
-
-        Self {
-            operation,
-            from,
-            to,
-        }
-    }
-}
-
-fn switch_lights(grid: &mut Vec<bool>, instructions: &[Instruction]) {
-    for instruction in instructions {
-        for x in instruction.from.0..=instruction.to.0 {
-            for y in instruction.from.1..=instruction.to.1 {
-                match instruction.operation {
-                    Switch::On => grid[x + y * GRID_SIZE.0] = true,
-                    Switch::Off => grid[x + y * GRID_SIZE.0] = false,
-                    Switch::Toggle => grid[x + y * GRID_SIZE.0] = !grid[x + y * GRID_SIZE.0],
-                }
-            }
-        }
-    }
-}
-
-fn switch_lights_advanced(grid: &mut Vec<i32>, instructions: &[Instruction]) {
-    for instruction in instructions {
-        for x in instruction.from.0..=instruction.to.0 {
-            for y in instruction.from.1..=instruction.to.1 {
-                match instruction.operation {
-                    Switch::On => grid[x + y * GRID_SIZE.0] += 1,
-                    Switch::Off => {
-                        grid[x + y * GRID_SIZE.0] = max(0, grid[x + y * GRID_SIZE.0] - 1)
-                    }
-                    Switch::Toggle => grid[x + y * GRID_SIZE.0] += 2,
-                }
-            }
-        }
-    }
-}
-
-fn make_grid() -> Vec<bool> {
-    iter::repeat(false)
-        .take(GRID_SIZE.0 * GRID_SIZE.1)
-        .collect::<Vec<_>>()
-}
-
-#[aoc(day6, part1)]
-pub fn run(input: &str) -> String {
-    let mut grid = make_grid();
-
-    let instructions: Vec<Instruction> = input.lines().map(|l| Instruction::from_str(l)).collect();
-
-    switch_lights(&mut grid, &instructions);
-
-    let res = grid.iter().filter(|c| **c).count().to_string();
-
-    utils::save_answer(&res, "day6.1");
-
-    res
-}
-
-#[aoc(day6, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let mut grid = make_grid().iter().map(|_| 0).collect::<Vec<i32>>();
-
-    let instructions: Vec<Instruction> = input.lines().map(|l| Instruction::from_str(l)).collect();
-
-    switch_lights_advanced(&mut grid, &instructions);
-
-    let res = grid.iter().sum::<i32>().to_string();
-
-    utils::save_answer(&res, "day6.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    let mut grid = make_grid();
-    switch_lights(
-        &mut grid,
-        &[Instruction::from_str("turn on 0,0 through 999,999")],
-    );
-    assert_eq!(grid.iter().filter(|c| **c).count(), 1_000_000);
-
-    let mut grid = make_grid();
-    switch_lights(
-        &mut grid,
-        &[Instruction::from_str("toggle 0,0 through 999,0")],
-    );
-    assert_eq!(grid.iter().filter(|c| **c).count(), 1_000);
-
-    let mut grid = make_grid();
-    switch_lights(
-        &mut grid,
-        &[Instruction::from_str("turn off 499,499 through 500,500")],
-    );
-    assert_eq!(grid.iter().filter(|c| **c).count(), 0);
-}
-
-#[test]
-fn test_run_pt2() {
-    let mut grid = make_grid().iter().map(|_| 0).collect::<Vec<i32>>();
-    switch_lights_advanced(
-        &mut grid,
-        &[Instruction::from_str("turn on 0,0 through 0,0")],
-    );
-    assert_eq!(grid.iter().sum::<i32>(), 1);
-
-    let mut grid = make_grid().iter().map(|_| 0).collect::<Vec<i32>>();
-    switch_lights_advanced(
-        &mut grid,
-        &[Instruction::from_str("toggle 0,0 through 999,999")],
-    );
-    assert_eq!(grid.iter().sum::<i32>(), 2_000_000);
-}
-
+<span>extern crate regex;</span>
+<span>use crate::utils;</span>
+<span>use lazy_static::lazy_static;</span>
+<span>use regex::Regex;</span>
+<span>use std::cmp::max;</span>
+<span>use std::iter;</span>
+<span></span>
+<span>const GRID_SIZE: (usize, usize) = (1_000, 1_000);</span>
+<span></span>
+<span>lazy_static! {</span>
+<span>    static ref INSTRUCTION_REGEX: Regex =</span>
+<span>        Regex::new(r"^(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)$").unwrap();</span>
+<span>}</span>
+<span></span>
+<span>enum Switch {</span>
+<span>    On,</span>
+<span>    Off,</span>
+<span>    Toggle,</span>
+<span>}</span>
+<span></span>
+<span>struct Instruction {</span>
+<span>    operation: Switch,</span>
+<span>    from: (usize, usize),</span>
+<span>    to: (usize, usize),</span>
+<span>}</span>
+<span></span>
+<span>impl Instruction {</span>
+<span>    fn from_str(s: &str) -> Self {</span>
+<span>        let caps: Vec<_> = INSTRUCTION_REGEX</span>
+<span>            .captures(s)</span>
+<span>            .expect("Cannot parse one of the instructions")</span>
+<span>            .iter()</span>
+<span>            .map(|c| c.expect("Cannot parse one of the instructions").as_str())</span>
+<span>            .skip(1)</span>
+<span>            .collect();</span>
+<span></span>
+<span>        let operation = match caps[0] {</span>
+<span>            "turn on" => Switch::On,</span>
+<span>            "turn off" => Switch::Off,</span>
+<span>            _ => Switch::Toggle,</span>
+<span>        };</span>
+<span>        let from = (</span>
+<span>            caps[1].parse::<usize>().unwrap(),</span>
+<span>            caps[2].parse::<usize>().unwrap(),</span>
+<span>        );</span>
+<span>        let to = (</span>
+<span>            caps[3].parse::<usize>().unwrap(),</span>
+<span>            caps[4].parse::<usize>().unwrap(),</span>
+<span>        );</span>
+<span></span>
+<span>        Self {</span>
+<span>            operation,</span>
+<span>            from,</span>
+<span>            to,</span>
+<span>        }</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>fn switch_lights(grid: &mut Vec<bool>, instructions: &[Instruction]) {</span>
+<span>    for instruction in instructions {</span>
+<span>        for x in instruction.from.0..=instruction.to.0 {</span>
+<span>            for y in instruction.from.1..=instruction.to.1 {</span>
+<span>                match instruction.operation {</span>
+<span>                    Switch::On => grid[x + y * GRID_SIZE.0] = true,</span>
+<span>                    Switch::Off => grid[x + y * GRID_SIZE.0] = false,</span>
+<span>                    Switch::Toggle => grid[x + y * GRID_SIZE.0] = !grid[x + y * GRID_SIZE.0],</span>
+<span>                }</span>
+<span>            }</span>
+<span>        }</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>fn switch_lights_advanced(grid: &mut Vec<i32>, instructions: &[Instruction]) {</span>
+<span>    for instruction in instructions {</span>
+<span>        for x in instruction.from.0..=instruction.to.0 {</span>
+<span>            for y in instruction.from.1..=instruction.to.1 {</span>
+<span>                match instruction.operation {</span>
+<span>                    Switch::On => grid[x + y * GRID_SIZE.0] += 1,</span>
+<span>                    Switch::Off => {</span>
+<span>                        grid[x + y * GRID_SIZE.0] = max(0, grid[x + y * GRID_SIZE.0] - 1)</span>
+<span>                    }</span>
+<span>                    Switch::Toggle => grid[x + y * GRID_SIZE.0] += 2,</span>
+<span>                }</span>
+<span>            }</span>
+<span>        }</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>fn make_grid() -> Vec<bool> {</span>
+<span>    iter::repeat(false)</span>
+<span>        .take(GRID_SIZE.0 * GRID_SIZE.1)</span>
+<span>        .collect::<Vec<_>>()</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day6, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let mut grid = make_grid();</span>
+<span></span>
+<span>    let instructions: Vec<Instruction> = input.lines().map(|l| Instruction::from_str(l)).collect();</span>
+<span></span>
+<span>    switch_lights(&mut grid, &instructions);</span>
+<span></span>
+<span>    let res = grid.iter().filter(|c| **c).count().to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day6.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day6, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let mut grid = make_grid().iter().map(|_| 0).collect::<Vec<i32>>();</span>
+<span></span>
+<span>    let instructions: Vec<Instruction> = input.lines().map(|l| Instruction::from_str(l)).collect();</span>
+<span></span>
+<span>    switch_lights_advanced(&mut grid, &instructions);</span>
+<span></span>
+<span>    let res = grid.iter().sum::<i32>().to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day6.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    let mut grid = make_grid();</span>
+<span>    switch_lights(</span>
+<span>        &mut grid,</span>
+<span>        &[Instruction::from_str("turn on 0,0 through 999,999")],</span>
+<span>    );</span>
+<span>    assert_eq!(grid.iter().filter(|c| **c).count(), 1_000_000);</span>
+<span></span>
+<span>    let mut grid = make_grid();</span>
+<span>    switch_lights(</span>
+<span>        &mut grid,</span>
+<span>        &[Instruction::from_str("toggle 0,0 through 999,0")],</span>
+<span>    );</span>
+<span>    assert_eq!(grid.iter().filter(|c| **c).count(), 1_000);</span>
+<span></span>
+<span>    let mut grid = make_grid();</span>
+<span>    switch_lights(</span>
+<span>        &mut grid,</span>
+<span>        &[Instruction::from_str("turn off 499,499 through 500,500")],</span>
+<span>    );</span>
+<span>    assert_eq!(grid.iter().filter(|c| **c).count(), 0);</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run_pt2() {</span>
+<span>    let mut grid = make_grid().iter().map(|_| 0).collect::<Vec<i32>>();</span>
+<span>    switch_lights_advanced(</span>
+<span>        &mut grid,</span>
+<span>        &[Instruction::from_str("turn on 0,0 through 0,0")],</span>
+<span>    );</span>
+<span>    assert_eq!(grid.iter().sum::<i32>(), 1);</span>
+<span></span>
+<span>    let mut grid = make_grid().iter().map(|_| 0).collect::<Vec<i32>>();</span>
+<span>    switch_lights_advanced(</span>
+<span>        &mut grid,</span>
+<span>        &[Instruction::from_str("toggle 0,0 through 999,999")],</span>
+<span>    );</span>
+<span>    assert_eq!(grid.iter().sum::<i32>(), 2_000_000);</span>
+<span>}</span>
+<span></span>
 </pre>

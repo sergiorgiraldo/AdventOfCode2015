@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,77 +34,77 @@
 </div>
 <h1>Day 4</h1>
 <pre>
-use crate::utils;
-use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
-use std::sync::mpsc::{Receiver, Sender};
-use std::sync::{mpsc, Arc};
-use std::thread::spawn;
-
-extern crate crypto;
-
-use crypto::digest::Digest;
-use crypto::md5::Md5;
-
-const OK_SIGNAL: &str = "00000";
-const OK_SIGNAL_PT2: &str = "000000";
-
-fn mine_adventcoins(key: &str, signal: &str) -> usize {
-    let counter = Arc::new(AtomicUsize::new(0));
-    let found = Arc::new(AtomicBool::new(false));
-
-    let (tx, rx): (Sender<usize>, Receiver<usize>) = mpsc::channel();
-
-    for _ in 0..8 {
-        let thread_found = found.clone();
-        let thread_counter = counter.clone();
-        let thread_tx = tx.clone();
-        let thread_key = key.to_string().clone();
-        let thread_signal = signal.to_string().clone();
-        let mut thread_md5 = Md5::new();
-
-        spawn(move || loop {
-            if thread_found.load(Ordering::Relaxed) {
-                break;
-            }
-
-            let n = thread_counter.fetch_add(1, Ordering::SeqCst);
-
-            thread_md5.reset();
-            thread_md5.input_str(&format!("{}{}", thread_key, n));
-
-            if thread_md5.result_str().starts_with(&thread_signal) {
-                thread_tx.send(n).unwrap();
-                thread_found.store(true, Ordering::Relaxed);
-                break;
-            }
-        });
-    }
-
-    rx.recv().unwrap()
-}
-
-#[aoc(day4, part1)]
-pub fn run(input: &str) -> String {
-    let res = mine_adventcoins(input, OK_SIGNAL).to_string();
-
-    utils::save_answer(&res, "day4.1");
-
-    res
-}
-
-#[aoc(day4, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let res = mine_adventcoins(input, OK_SIGNAL_PT2).to_string();
-
-    utils::save_answer(&res, "day4.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    assert_eq!(mine_adventcoins("abcdef", OK_SIGNAL), 609_043);
-    assert_eq!(mine_adventcoins("pqrstuv", OK_SIGNAL), 1_048_970);
-}
-
+<span>use crate::utils;</span>
+<span>use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};</span>
+<span>use std::sync::mpsc::{Receiver, Sender};</span>
+<span>use std::sync::{mpsc, Arc};</span>
+<span>use std::thread::spawn;</span>
+<span></span>
+<span>extern crate crypto;</span>
+<span></span>
+<span>use crypto::digest::Digest;</span>
+<span>use crypto::md5::Md5;</span>
+<span></span>
+<span>const OK_SIGNAL: &str = "00000";</span>
+<span>const OK_SIGNAL_PT2: &str = "000000";</span>
+<span></span>
+<span>fn mine_adventcoins(key: &str, signal: &str) -> usize {</span>
+<span>    let counter = Arc::new(AtomicUsize::new(0));</span>
+<span>    let found = Arc::new(AtomicBool::new(false));</span>
+<span></span>
+<span>    let (tx, rx): (Sender<usize>, Receiver<usize>) = mpsc::channel();</span>
+<span></span>
+<span>    for _ in 0..8 {</span>
+<span>        let thread_found = found.clone();</span>
+<span>        let thread_counter = counter.clone();</span>
+<span>        let thread_tx = tx.clone();</span>
+<span>        let thread_key = key.to_string().clone();</span>
+<span>        let thread_signal = signal.to_string().clone();</span>
+<span>        let mut thread_md5 = Md5::new();</span>
+<span></span>
+<span>        spawn(move || loop {</span>
+<span>            if thread_found.load(Ordering::Relaxed) {</span>
+<span>                break;</span>
+<span>            }</span>
+<span></span>
+<span>            let n = thread_counter.fetch_add(1, Ordering::SeqCst);</span>
+<span></span>
+<span>            thread_md5.reset();</span>
+<span>            thread_md5.input_str(&format!("{}{}", thread_key, n));</span>
+<span></span>
+<span>            if thread_md5.result_str().starts_with(&thread_signal) {</span>
+<span>                thread_tx.send(n).unwrap();</span>
+<span>                thread_found.store(true, Ordering::Relaxed);</span>
+<span>                break;</span>
+<span>            }</span>
+<span>        });</span>
+<span>    }</span>
+<span></span>
+<span>    rx.recv().unwrap()</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day4, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let res = mine_adventcoins(input, OK_SIGNAL).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day4.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day4, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let res = mine_adventcoins(input, OK_SIGNAL_PT2).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day4.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    assert_eq!(mine_adventcoins("abcdef", OK_SIGNAL), 609_043);</span>
+<span>    assert_eq!(mine_adventcoins("pqrstuv", OK_SIGNAL), 1_048_970);</span>
+<span>}</span>
+<span></span>
 </pre>

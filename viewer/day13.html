@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,134 +34,134 @@
 </div>
 <h1>Day 13</h1>
 <pre>
-use std::collections::HashMap;
-extern crate permutohedron;
-use permutohedron::LexicalPermutation;
-use std::iter::{repeat, FromIterator};
-use crate::utils;
-
-fn parse_hosts(input: &str) -> HashMap<String, HashMap<String, i32>> {
-    let mut hosts: HashMap<String, HashMap<String, i32>> = HashMap::new();
-
-    input.lines().for_each(|line| {
-        let words: Vec<_> = line.split_whitespace().collect();
-        let host = words[0];
-        let mut happiness_level = words[3].parse::<i32>().unwrap();
-        let friend = words[10].trim_end_matches('.');
-        if words[2] == "lose" {
-            happiness_level *= -1;
-        }
-
-        hosts
-            .entry(host.to_owned())
-            .or_insert_with(HashMap::new)
-            .insert(friend.to_owned(), happiness_level);
-    });
-
-    hosts
-}
-
-fn arrange_table(hosts: HashMap<String, HashMap<String, i32>>) -> i32 {
-    let mut data: Vec<String> = hosts.keys().cloned().collect();
-    let mut permutations: Vec<Vec<String>> = Vec::new();
-
-    loop {
-        permutations.push(data.clone());
-        if !data.next_permutation() {
-            break;
-        }
-    }
-
-    // make the permutations circular
-    permutations = permutations
-        .iter_mut()
-        .map(|p| {
-            p.push(p[0].clone());
-            p.to_owned()
-        })
-        .collect();
-
-    let happiness: Vec<i32> = permutations
-        .iter()
-        .map(|table| -> i32 {
-            table
-                .iter()
-                .enumerate()
-                .map(|(idx, host)| {
-                    let mut host_happiness = 0;
-                    if idx != 0 {
-                        host_happiness += hosts[host][&table[idx - 1]];
-                    }
-                    if idx != table.len() - 1 {
-                        host_happiness += hosts[host][&table[idx + 1]];
-                    }
-
-                    host_happiness
-                })
-                .sum()
-        })
-        .collect();
-
-    *happiness.iter().max().unwrap()
-}
-
-#[aoc(day13, part1)]
-pub fn run(input: &str) -> String {
-    let hosts = parse_hosts(input);
-
-    let res = arrange_table(hosts).to_string();
-
-    utils::save_answer(&res, "day13.1");
-
-    res
-}
-
-#[aoc(day13, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let mut hosts = parse_hosts(input);
-
-    hosts.insert(
-        "Me".to_string(),
-        HashMap::from_iter(
-            hosts
-                .keys()
-                .cloned()
-                .zip(repeat(0))
-                .collect::<Vec<(String, i32)>>(),
-        ),
-    );
-
-    hosts = hosts
-        .iter_mut()
-        .map(|(key, neighbours)| {
-            neighbours.insert("Me".to_string(), 0);
-            (key.clone(), neighbours.clone())
-        })
-        .collect();
-
-    let res = arrange_table(hosts).to_string();
-
-    utils::save_answer(&res, "day13.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    let input = r#"Alice would gain 54 happiness units by sitting next to Bob.
-Alice would lose 79 happiness units by sitting next to Carol.
-Alice would lose 2 happiness units by sitting next to David.
-Bob would gain 83 happiness units by sitting next to Alice.
-Bob would lose 7 happiness units by sitting next to Carol.
-Bob would lose 63 happiness units by sitting next to David.
-Carol would lose 62 happiness units by sitting next to Alice.
-Carol would gain 60 happiness units by sitting next to Bob.
-Carol would gain 55 happiness units by sitting next to David.
-David would gain 46 happiness units by sitting next to Alice.
-David would lose 7 happiness units by sitting next to Bob.
-David would gain 41 happiness units by sitting next to Carol."#;
-
-    assert_eq!(arrange_table(parse_hosts(input)), 330);
-}
-
+<span>use std::collections::HashMap;</span>
+<span>extern crate permutohedron;</span>
+<span>use permutohedron::LexicalPermutation;</span>
+<span>use std::iter::{repeat, FromIterator};</span>
+<span>use crate::utils;</span>
+<span></span>
+<span>fn parse_hosts(input: &str) -> HashMap<String, HashMap<String, i32>> {</span>
+<span>    let mut hosts: HashMap<String, HashMap<String, i32>> = HashMap::new();</span>
+<span></span>
+<span>    input.lines().for_each(|line| {</span>
+<span>        let words: Vec<_> = line.split_whitespace().collect();</span>
+<span>        let host = words[0];</span>
+<span>        let mut happiness_level = words[3].parse::<i32>().unwrap();</span>
+<span>        let friend = words[10].trim_end_matches('.');</span>
+<span>        if words[2] == "lose" {</span>
+<span>            happiness_level *= -1;</span>
+<span>        }</span>
+<span></span>
+<span>        hosts</span>
+<span>            .entry(host.to_owned())</span>
+<span>            .or_insert_with(HashMap::new)</span>
+<span>            .insert(friend.to_owned(), happiness_level);</span>
+<span>    });</span>
+<span></span>
+<span>    hosts</span>
+<span>}</span>
+<span></span>
+<span>fn arrange_table(hosts: HashMap<String, HashMap<String, i32>>) -> i32 {</span>
+<span>    let mut data: Vec<String> = hosts.keys().cloned().collect();</span>
+<span>    let mut permutations: Vec<Vec<String>> = Vec::new();</span>
+<span></span>
+<span>    loop {</span>
+<span>        permutations.push(data.clone());</span>
+<span>        if !data.next_permutation() {</span>
+<span>            break;</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    // make the permutations circular</span>
+<span>    permutations = permutations</span>
+<span>        .iter_mut()</span>
+<span>        .map(|p| {</span>
+<span>            p.push(p[0].clone());</span>
+<span>            p.to_owned()</span>
+<span>        })</span>
+<span>        .collect();</span>
+<span></span>
+<span>    let happiness: Vec<i32> = permutations</span>
+<span>        .iter()</span>
+<span>        .map(|table| -> i32 {</span>
+<span>            table</span>
+<span>                .iter()</span>
+<span>                .enumerate()</span>
+<span>                .map(|(idx, host)| {</span>
+<span>                    let mut host_happiness = 0;</span>
+<span>                    if idx != 0 {</span>
+<span>                        host_happiness += hosts[host][&table[idx - 1]];</span>
+<span>                    }</span>
+<span>                    if idx != table.len() - 1 {</span>
+<span>                        host_happiness += hosts[host][&table[idx + 1]];</span>
+<span>                    }</span>
+<span></span>
+<span>                    host_happiness</span>
+<span>                })</span>
+<span>                .sum()</span>
+<span>        })</span>
+<span>        .collect();</span>
+<span></span>
+<span>    *happiness.iter().max().unwrap()</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day13, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let hosts = parse_hosts(input);</span>
+<span></span>
+<span>    let res = arrange_table(hosts).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day13.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day13, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let mut hosts = parse_hosts(input);</span>
+<span></span>
+<span>    hosts.insert(</span>
+<span>        "Me".to_string(),</span>
+<span>        HashMap::from_iter(</span>
+<span>            hosts</span>
+<span>                .keys()</span>
+<span>                .cloned()</span>
+<span>                .zip(repeat(0))</span>
+<span>                .collect::<Vec<(String, i32)>>(),</span>
+<span>        ),</span>
+<span>    );</span>
+<span></span>
+<span>    hosts = hosts</span>
+<span>        .iter_mut()</span>
+<span>        .map(|(key, neighbours)| {</span>
+<span>            neighbours.insert("Me".to_string(), 0);</span>
+<span>            (key.clone(), neighbours.clone())</span>
+<span>        })</span>
+<span>        .collect();</span>
+<span></span>
+<span>    let res = arrange_table(hosts).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day13.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    let input = r#"Alice would gain 54 happiness units by sitting next to Bob.</span>
+<span>Alice would lose 79 happiness units by sitting next to Carol.</span>
+<span>Alice would lose 2 happiness units by sitting next to David.</span>
+<span>Bob would gain 83 happiness units by sitting next to Alice.</span>
+<span>Bob would lose 7 happiness units by sitting next to Carol.</span>
+<span>Bob would lose 63 happiness units by sitting next to David.</span>
+<span>Carol would lose 62 happiness units by sitting next to Alice.</span>
+<span>Carol would gain 60 happiness units by sitting next to Bob.</span>
+<span>Carol would gain 55 happiness units by sitting next to David.</span>
+<span>David would gain 46 happiness units by sitting next to Alice.</span>
+<span>David would lose 7 happiness units by sitting next to Bob.</span>
+<span>David would gain 41 happiness units by sitting next to Carol."#;</span>
+<span></span>
+<span>    assert_eq!(arrange_table(parse_hosts(input)), 330);</span>
+<span>}</span>
+<span></span>
 </pre>

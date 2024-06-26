@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,101 +34,101 @@
 </div>
 <h1>Day 19</h1>
 <pre>
-use crate::utils;
-extern crate regex;
-use regex::Regex;
-use std::collections::{HashMap, HashSet};
-extern crate itertools;
-use itertools::Itertools;
-
-fn parse_replacements(s: &str) -> Vec<(String, String)> {
-    s.lines()
-        .map(|l| {
-            let words: Vec<_> = l.split_whitespace().collect();
-            (words[0].to_owned(), words[2].to_owned())
-        })
-        .collect()
-}
-
-fn apply_replacements(input: &str, replacements: &[(String, String)]) -> usize {
-    let input = input.to_owned();
-    let mut molecules: HashSet<String> = HashSet::new();
-
-    for (replacement_s, replacement_r) in replacements {
-        let local_input = input.clone();
-
-        let regex = Regex::new(&format!("({})", replacement_s)).unwrap();
-
-        for m in regex.find_iter(&local_input) {
-            let pre_input = local_input[0..m.start()].to_string();
-            let post_input = local_input[m.end()..].to_string();
-
-            let molecule = format!("{}{}{}", pre_input, replacement_r, post_input);
-            molecules.insert(molecule);
-        }
-    }
-
-    molecules.len()
-}
-
-fn synthesize_molecule(input: &str, replacements: &[(String, String)], target: &str) -> i32 {
-    let replacements: HashMap<String, String> = replacements
-        .iter()
-        .map(|r| (r.1.chars().rev().collect(), r.0.chars().rev().collect()))
-        .collect();
-
-    let mut count = 0;
-    let mut actual_target = target.chars().rev().join("");
-    let regex = Regex::new(&replacements.keys().join("|")).unwrap();
-
-    while actual_target != input {
-        actual_target = regex
-            .replace(&actual_target, |captures: &regex::Captures| {
-                replacements.get(&captures[0]).unwrap()
-            })
-            .to_string();
-
-        count += 1;
-    }
-
-    count
-}
-
-#[aoc(day19, part1)]
-pub fn run(input: &str) -> String {
-    let split_regex = Regex::new(r#"\n\n"#).unwrap();
-    let parts: Vec<_> = split_regex.split(&input).collect();
-
-    let replacements = parse_replacements(parts[0]);
-
-    let res = apply_replacements(parts[1], &replacements).to_string();
-
-    utils::solve(2015, 19, "1", &res);
-
-    res
-}
-
-#[aoc(day19, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let split_regex = Regex::new(r#"\n\n"#).unwrap();
-    let parts: Vec<_> = split_regex.split(&input).collect();
-
-    let replacements = parse_replacements(parts[0]);
-    
-    let res = synthesize_molecule(&"e", &replacements, parts[1]).to_string();
-
-    utils::solve(2015, 19, "2", &res);
-
-    res
-}
-
-#[test]
-fn test_run() {
-    const TEST_REPLACEMENTS: &str = r#"H => HO
-    H => OH
-    O => HH"#;
-    let replacements = parse_replacements(&TEST_REPLACEMENTS);
-    assert_eq!(apply_replacements(&"HOH", &replacements), 4);
-}
-
+<span>use crate::utils;</span>
+<span>extern crate regex;</span>
+<span>use regex::Regex;</span>
+<span>use std::collections::{HashMap, HashSet};</span>
+<span>extern crate itertools;</span>
+<span>use itertools::Itertools;</span>
+<span></span>
+<span>fn parse_replacements(s: &str) -> Vec<(String, String)> {</span>
+<span>    s.lines()</span>
+<span>        .map(|l| {</span>
+<span>            let words: Vec<_> = l.split_whitespace().collect();</span>
+<span>            (words[0].to_owned(), words[2].to_owned())</span>
+<span>        })</span>
+<span>        .collect()</span>
+<span>}</span>
+<span></span>
+<span>fn apply_replacements(input: &str, replacements: &[(String, String)]) -> usize {</span>
+<span>    let input = input.to_owned();</span>
+<span>    let mut molecules: HashSet<String> = HashSet::new();</span>
+<span></span>
+<span>    for (replacement_s, replacement_r) in replacements {</span>
+<span>        let local_input = input.clone();</span>
+<span></span>
+<span>        let regex = Regex::new(&format!("({})", replacement_s)).unwrap();</span>
+<span></span>
+<span>        for m in regex.find_iter(&local_input) {</span>
+<span>            let pre_input = local_input[0..m.start()].to_string();</span>
+<span>            let post_input = local_input[m.end()..].to_string();</span>
+<span></span>
+<span>            let molecule = format!("{}{}{}", pre_input, replacement_r, post_input);</span>
+<span>            molecules.insert(molecule);</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    molecules.len()</span>
+<span>}</span>
+<span></span>
+<span>fn synthesize_molecule(input: &str, replacements: &[(String, String)], target: &str) -> i32 {</span>
+<span>    let replacements: HashMap<String, String> = replacements</span>
+<span>        .iter()</span>
+<span>        .map(|r| (r.1.chars().rev().collect(), r.0.chars().rev().collect()))</span>
+<span>        .collect();</span>
+<span></span>
+<span>    let mut count = 0;</span>
+<span>    let mut actual_target = target.chars().rev().join("");</span>
+<span>    let regex = Regex::new(&replacements.keys().join("|")).unwrap();</span>
+<span></span>
+<span>    while actual_target != input {</span>
+<span>        actual_target = regex</span>
+<span>            .replace(&actual_target, |captures: &regex::Captures| {</span>
+<span>                replacements.get(&captures[0]).unwrap()</span>
+<span>            })</span>
+<span>            .to_string();</span>
+<span></span>
+<span>        count += 1;</span>
+<span>    }</span>
+<span></span>
+<span>    count</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day19, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let split_regex = Regex::new(r#"\n\n"#).unwrap();</span>
+<span>    let parts: Vec<_> = split_regex.split(&input).collect();</span>
+<span></span>
+<span>    let replacements = parse_replacements(parts[0]);</span>
+<span></span>
+<span>    let res = apply_replacements(parts[1], &replacements).to_string();</span>
+<span></span>
+<span>    utils::solve(2015, 19, "1", &res);</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day19, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let split_regex = Regex::new(r#"\n\n"#).unwrap();</span>
+<span>    let parts: Vec<_> = split_regex.split(&input).collect();</span>
+<span></span>
+<span>    let replacements = parse_replacements(parts[0]);</span>
+<span>    </span>
+<span>    let res = synthesize_molecule(&"e", &replacements, parts[1]).to_string();</span>
+<span></span>
+<span>    utils::solve(2015, 19, "2", &res);</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    const TEST_REPLACEMENTS: &str = r#"H => HO</span>
+<span>    H => OH</span>
+<span>    O => HH"#;</span>
+<span>    let replacements = parse_replacements(&TEST_REPLACEMENTS);</span>
+<span>    assert_eq!(apply_replacements(&"HOH", &replacements), 4);</span>
+<span>}</span>
+<span></span>
 </pre>

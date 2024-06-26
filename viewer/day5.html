@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,93 +34,93 @@
 </div>
 <h1>Day 5</h1>
 <pre>
-extern crate itertools;
-use crate::utils;
-use itertools::Itertools;
-
-const VOWELS: [char; 5] = ['a', 'e', 'i', 'o', 'u'];
-const DISALLOWED_STRINGS: [&str; 4] = ["ab", "cd", "pq", "xy"];
-
-trait Nice {
-    fn is_nice(&self) -> bool;
-    fn is_the_nicest(&self) -> bool;
-}
-
-impl Nice for String {
-    fn is_nice(&self) -> bool {
-        self.chars().filter(|c| VOWELS.contains(c)).count() >= 3
-            && self
-                .chars()
-                .group_by(|&c| c)
-                .into_iter()
-                .any(|(_, vals)| vals.count() > 1)
-            && !DISALLOWED_STRINGS.iter().any(|ds| self.contains(ds))
-    }
-
-    fn is_the_nicest(&self) -> bool {
-        self.chars()
-            .enumerate()
-            .zip(self.chars().enumerate().skip(1))
-            .sorted_by_key(|g| format!("{}{}", (g.0).1, (g.1).1)) // each char is now a tuple with the char and the pos
-            .group_by(|g| format!("{}{}", (g.0).1, (g.1).1)) // group by char pairs
-            .into_iter()
-            .map(|(key, val)| (key, val.collect::<Vec<_>>())) // collect the group values
-            .filter(|(_, val)| val.iter().count() > 1) // exclude not repeated char groups
-            .filter(|(_, val)| val.len() != 2 || (val[0].1).0 != (val[1].0).0) // exclude consecutive repetitions like "aaa"
-            .any(|(_, vals)| vals.len() > 1) // a valid word must have at least two non consecutive repetitions
-
-            && self.chars()
-            .zip(self.chars().skip(1))
-            .zip(self.chars().skip(2))
-            .any(|g| (g.0).0 == g.1)
-    }
-}
-
-#[aoc(day5, part1)]
-pub fn run(input: &str) -> String {
-    let res = input
-        .lines()
-        .filter(|s| s.to_string().is_nice())
-        .count()
-        .to_string();
-
-    utils::save_answer(&res, "day5.1");
-
-    res
-}
-
-#[aoc(day5, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let res = input
-        .lines()
-        .filter(|s| s.to_string().is_the_nicest())
-        .count()
-        .to_string();
-
-    utils::save_answer(&res, "day5.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    assert!("ugknbfddgicrmopn".to_string().is_nice());
-    assert!("aaa".to_string().is_nice());
-    assert!(!"jchzalrnumimnmhp".to_string().is_nice());
-    assert!(!"haegwjzuvuyypxyu".to_string().is_nice());
-    assert!(!"dvszwmarrgswjxmb".to_string().is_nice());
-}
-
-#[test]
-fn test_run_pt2() {
-    assert!("xyxy".to_string().is_the_nicest());
-    assert!(!"aaa".to_string().is_the_nicest());
-    assert!(!"aabcdefgaa".to_string().is_the_nicest());
-    assert!("qjhvhtzxzqqjkmpb".to_string().is_the_nicest());
-    assert!("xxyxx".to_string().is_the_nicest());
-    assert!(!"uurcxstgmygtbstg".to_string().is_the_nicest());
-    assert!(!"ieodomkazucvgmuy".to_string().is_the_nicest());
-    assert!("rxexcbwhiywwwwnu".to_string().is_the_nicest());
-}
-
+<span>extern crate itertools;</span>
+<span>use crate::utils;</span>
+<span>use itertools::Itertools;</span>
+<span></span>
+<span>const VOWELS: [char; 5] = ['a', 'e', 'i', 'o', 'u'];</span>
+<span>const DISALLOWED_STRINGS: [&str; 4] = ["ab", "cd", "pq", "xy"];</span>
+<span></span>
+<span>trait Nice {</span>
+<span>    fn is_nice(&self) -> bool;</span>
+<span>    fn is_the_nicest(&self) -> bool;</span>
+<span>}</span>
+<span></span>
+<span>impl Nice for String {</span>
+<span>    fn is_nice(&self) -> bool {</span>
+<span>        self.chars().filter(|c| VOWELS.contains(c)).count() >= 3</span>
+<span>            && self</span>
+<span>                .chars()</span>
+<span>                .group_by(|&c| c)</span>
+<span>                .into_iter()</span>
+<span>                .any(|(_, vals)| vals.count() > 1)</span>
+<span>            && !DISALLOWED_STRINGS.iter().any(|ds| self.contains(ds))</span>
+<span>    }</span>
+<span></span>
+<span>    fn is_the_nicest(&self) -> bool {</span>
+<span>        self.chars()</span>
+<span>            .enumerate()</span>
+<span>            .zip(self.chars().enumerate().skip(1))</span>
+<span>            .sorted_by_key(|g| format!("{}{}", (g.0).1, (g.1).1)) // each char is now a tuple with the char and the pos</span>
+<span>            .group_by(|g| format!("{}{}", (g.0).1, (g.1).1)) // group by char pairs</span>
+<span>            .into_iter()</span>
+<span>            .map(|(key, val)| (key, val.collect::<Vec<_>>())) // collect the group values</span>
+<span>            .filter(|(_, val)| val.iter().count() > 1) // exclude not repeated char groups</span>
+<span>            .filter(|(_, val)| val.len() != 2 || (val[0].1).0 != (val[1].0).0) // exclude consecutive repetitions like "aaa"</span>
+<span>            .any(|(_, vals)| vals.len() > 1) // a valid word must have at least two non consecutive repetitions</span>
+<span></span>
+<span>            && self.chars()</span>
+<span>            .zip(self.chars().skip(1))</span>
+<span>            .zip(self.chars().skip(2))</span>
+<span>            .any(|g| (g.0).0 == g.1)</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day5, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let res = input</span>
+<span>        .lines()</span>
+<span>        .filter(|s| s.to_string().is_nice())</span>
+<span>        .count()</span>
+<span>        .to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day5.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day5, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let res = input</span>
+<span>        .lines()</span>
+<span>        .filter(|s| s.to_string().is_the_nicest())</span>
+<span>        .count()</span>
+<span>        .to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day5.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    assert!("ugknbfddgicrmopn".to_string().is_nice());</span>
+<span>    assert!("aaa".to_string().is_nice());</span>
+<span>    assert!(!"jchzalrnumimnmhp".to_string().is_nice());</span>
+<span>    assert!(!"haegwjzuvuyypxyu".to_string().is_nice());</span>
+<span>    assert!(!"dvszwmarrgswjxmb".to_string().is_nice());</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run_pt2() {</span>
+<span>    assert!("xyxy".to_string().is_the_nicest());</span>
+<span>    assert!(!"aaa".to_string().is_the_nicest());</span>
+<span>    assert!(!"aabcdefgaa".to_string().is_the_nicest());</span>
+<span>    assert!("qjhvhtzxzqqjkmpb".to_string().is_the_nicest());</span>
+<span>    assert!("xxyxx".to_string().is_the_nicest());</span>
+<span>    assert!(!"uurcxstgmygtbstg".to_string().is_the_nicest());</span>
+<span>    assert!(!"ieodomkazucvgmuy".to_string().is_the_nicest());</span>
+<span>    assert!("rxexcbwhiywwwwnu".to_string().is_the_nicest());</span>
+<span>}</span>
+<span></span>
 </pre>

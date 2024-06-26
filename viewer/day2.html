@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,96 +34,96 @@
 </div>
 <h1>Day 2</h1>
 <pre>
-extern crate itertools;
-use crate::utils;
-use itertools::Itertools;
-
-struct Gift {
-    l: u32,
-    w: u32,
-    h: u32,
-
-    sides: [u32; 3],
-}
-
-impl Gift {
-    fn smallest_side(&self) -> u32 {
-        *self.sides.iter().min().unwrap()
-    }
-}
-
-impl From<&str> for Gift {
-    fn from(s: &str) -> Self {
-        let sizes = s.split('x').collect::<Vec<&str>>();
-        let l = sizes[0].parse().unwrap();
-        let w = sizes[1].parse().unwrap();
-        let h = sizes[2].parse().unwrap();
-
-        Self {
-            l,
-            w,
-            h,
-            sides: [l * w, w * h, h * l],
-        }
-    }
-}
-
-fn compute_wrapping_paper(input: &str) -> u32 {
-    let gifts: Vec<Gift> = input.lines().map(|g| g.into()).collect();
-
-    gifts
-        .iter()
-        .map(|gift| {
-            let sides_sum: u32 = gift.sides.iter().map(|s| s * 2).sum();
-            sides_sum + gift.smallest_side()
-        })
-        .sum()
-}
-
-fn compute_ribbon(input: &str) -> u32 {
-    let gifts: Vec<Gift> = input.lines().map(|g| g.into()).collect();
-
-    gifts
-        .iter()
-        .map(|gift| {
-            let dimensions = [gift.l, gift.w, gift.h];
-            let smallest_dimensions_sum: u32 =
-                dimensions.iter().sorted().take(2).map(|d| d * 2).sum();
-            let all_dimensions_sum: u32 = dimensions.iter().product();
-
-            smallest_dimensions_sum + all_dimensions_sum
-        })
-        .sum()
-}
-
-#[aoc(day2, part1)]
-pub fn run(input: &str) -> String {
-    let res = compute_wrapping_paper(input).to_string();
-
-    utils::save_answer(&res, "day2.1");
-
-    res
-}
-
-#[aoc(day2, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let res = compute_ribbon(input).to_string();
-
-    utils::save_answer(&res, "day2.2");
-
-    res
-}
-
-#[test]
-fn test_run() {
-    assert_eq!(compute_wrapping_paper("2x3x4"), 58);
-    assert_eq!(compute_wrapping_paper("1x1x10"), 43);
-}
-
-#[test]
-fn test_run_pt2() {
-    assert_eq!(compute_ribbon("3x2x4"), 34);
-    assert_eq!(compute_ribbon("1x1x10"), 14);
-}
-
+<span>extern crate itertools;</span>
+<span>use crate::utils;</span>
+<span>use itertools::Itertools;</span>
+<span></span>
+<span>struct Gift {</span>
+<span>    l: u32,</span>
+<span>    w: u32,</span>
+<span>    h: u32,</span>
+<span></span>
+<span>    sides: [u32; 3],</span>
+<span>}</span>
+<span></span>
+<span>impl Gift {</span>
+<span>    fn smallest_side(&self) -> u32 {</span>
+<span>        *self.sides.iter().min().unwrap()</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>impl From<&str> for Gift {</span>
+<span>    fn from(s: &str) -> Self {</span>
+<span>        let sizes = s.split('x').collect::<Vec<&str>>();</span>
+<span>        let l = sizes[0].parse().unwrap();</span>
+<span>        let w = sizes[1].parse().unwrap();</span>
+<span>        let h = sizes[2].parse().unwrap();</span>
+<span></span>
+<span>        Self {</span>
+<span>            l,</span>
+<span>            w,</span>
+<span>            h,</span>
+<span>            sides: [l * w, w * h, h * l],</span>
+<span>        }</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>fn compute_wrapping_paper(input: &str) -> u32 {</span>
+<span>    let gifts: Vec<Gift> = input.lines().map(|g| g.into()).collect();</span>
+<span></span>
+<span>    gifts</span>
+<span>        .iter()</span>
+<span>        .map(|gift| {</span>
+<span>            let sides_sum: u32 = gift.sides.iter().map(|s| s * 2).sum();</span>
+<span>            sides_sum + gift.smallest_side()</span>
+<span>        })</span>
+<span>        .sum()</span>
+<span>}</span>
+<span></span>
+<span>fn compute_ribbon(input: &str) -> u32 {</span>
+<span>    let gifts: Vec<Gift> = input.lines().map(|g| g.into()).collect();</span>
+<span></span>
+<span>    gifts</span>
+<span>        .iter()</span>
+<span>        .map(|gift| {</span>
+<span>            let dimensions = [gift.l, gift.w, gift.h];</span>
+<span>            let smallest_dimensions_sum: u32 =</span>
+<span>                dimensions.iter().sorted().take(2).map(|d| d * 2).sum();</span>
+<span>            let all_dimensions_sum: u32 = dimensions.iter().product();</span>
+<span></span>
+<span>            smallest_dimensions_sum + all_dimensions_sum</span>
+<span>        })</span>
+<span>        .sum()</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day2, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let res = compute_wrapping_paper(input).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day2.1");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day2, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let res = compute_ribbon(input).to_string();</span>
+<span></span>
+<span>    utils::save_answer(&res, "day2.2");</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run() {</span>
+<span>    assert_eq!(compute_wrapping_paper("2x3x4"), 58);</span>
+<span>    assert_eq!(compute_wrapping_paper("1x1x10"), 43);</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_run_pt2() {</span>
+<span>    assert_eq!(compute_ribbon("3x2x4"), 34);</span>
+<span>    assert_eq!(compute_ribbon("1x1x10"), 14);</span>
+<span>}</span>
+<span></span>
 </pre>

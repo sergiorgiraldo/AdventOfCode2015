@@ -1,4 +1,32 @@
-<style>pre{font-size: large;}</style>
+<style>
+    pre {
+  background: #303030;
+  color: #f1f1f1;
+  padding: 10px 16px;
+  border-radius: 2px;
+  border-top: 4px solid #00aeef;
+  -moz-box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px #000;
+  counter-reset: line;
+}
+pre span {
+  display: block;
+  line-height: 1.5rem;
+}
+pre span:before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  border-right: 1px solid #ddd;
+  padding: 0 .5em;
+  margin-right: .5em;
+  color: #888
+}
+span{
+    font-family: monospace;
+    font-size: 16px;
+}
+</style>
 <script src="script.js"></script>
 <div id="navigation">
 <button onclick="navigateTo('prev')">Previous Day</button>
@@ -6,142 +34,142 @@
 </div>
 <h1>Day 21</h1>
 <pre>
-use crate::utils;
-extern crate itertools;
-use itertools::Itertools;
-use std::cmp::{max, min};
-
-// these come from the puzzle
-
-const PLAYER_HP: i32 = 100;
-
-// (cost, damage, armor)
-const WEAPONS: [(i32, i32, i32); 5] = [(8, 4, 0), (10, 5, 0), (25, 6, 0), (40, 7, 0), (78, 8, 0)];
-
-// (cost, damage, armor)
-const ARMORS: [(i32, i32, i32); 5] = [(13, 0, 1), (31, 0, 2), (53, 0, 3), (75, 0, 4), (102, 0, 5)];
-
-// (cost, damage, armor)
-const RINGS: [(i32, i32, i32); 6] = [
-    (25, 1, 0),
-    (50, 2, 0),
-    (100, 3, 0),
-    (20, 0, 1),
-    (40, 0, 2),
-    (80, 0, 3),
-];
-
-fn player_wins_fight(php: i32, pd: i32, pa: i32, bhp: i32, bd: i32, ba: i32) -> bool {
-    let mut php = php;
-    let mut bhp = bhp;
-
-    loop {
-        bhp -= max(1, pd - ba);
-        if bhp <= 0 {
-            return true;
-        }
-
-        php -= max(1, bd - pa);
-        if php <= 0 {
-            return false;
-        }
-    }
-}
-
-fn find_optimal_equipment(boss: (i32, i32, i32)) -> (i32, i32) {
-    let mut optimal_cost = std::i32::MAX;
-    let mut worst_cost = 0;
-
-    for weapon in WEAPONS.iter() {
-        for a in -1..(ARMORS.len() as i32) {
-            let armor = if a == -1 {
-                (0, 0, 0)
-            } else {
-                ARMORS[a as usize]
-            };
-
-            for num_rings in 0..=2 {
-                let ring_combinations: Vec<Vec<(i32, i32, i32)>> = (0..RINGS.len())
-                    .combinations(num_rings)
-                    .map(|c| c.into_iter().map(|ridx| RINGS[ridx]).collect())
-                    .collect();
-
-                for rings in ring_combinations {
-                    let cost: i32 = weapon.0 + armor.0 + rings.iter().map(|r| r.0).sum::<i32>();
-                    let player_damage = weapon.1 + armor.1 + rings.iter().map(|r| r.1).sum::<i32>();
-                    let player_armor = weapon.2 + armor.2 + rings.iter().map(|r| r.2).sum::<i32>();
-
-                    if player_wins_fight(
-                        PLAYER_HP,
-                        player_damage,
-                        player_armor,
-                        boss.0,
-                        boss.1,
-                        boss.2,
-                    ) {
-                        optimal_cost = min(cost, optimal_cost);
-                    }
-
-                    if !player_wins_fight(
-                        PLAYER_HP,
-                        player_damage,
-                        player_armor,
-                        boss.0,
-                        boss.1,
-                        boss.2,
-                    ) {
-                        worst_cost = max(cost, worst_cost);
-                    }
-                }
-            }
-        }
-    }
-
-    (optimal_cost, worst_cost)
-}
-
-fn get_boss_stats(input: &str) -> (i32, i32, i32) {
-    let mut lines = input.lines();
-    let hp = lines
-        .next()
-        .map(|l| l.split(':').nth(1).unwrap().trim().parse::<i32>().unwrap())
-        .unwrap();
-    let damage = lines
-        .next()
-        .map(|l| l.split(':').nth(1).unwrap().trim().parse::<i32>().unwrap())
-        .unwrap();
-    let armor = lines
-        .next()
-        .map(|l| l.split(':').nth(1).unwrap().trim().parse::<i32>().unwrap())
-        .unwrap();
-    (hp, damage, armor)
-}
-
-#[aoc(day21, part1)]
-pub fn run(input: &str) -> String {
-    let boss = get_boss_stats(input);
-
-    let res = find_optimal_equipment(boss).0.to_string();
-
-    utils::solve(2015, 21, "1", &res);
-
-    res
-}
-
-#[aoc(day21, part2)]
-pub fn run_pt2(input: &str) -> String {
-    let boss = get_boss_stats(input);
-
-    let res = find_optimal_equipment(boss).1.to_string();
-
-    utils::solve(2015, 21, "2", &res);
-
-    res
-}
-
-#[test]
-fn test_player_wins_fight() {
-    assert_eq!(player_wins_fight(8, 5, 5, 12, 7, 2), true);
-}
-
+<span>use crate::utils;</span>
+<span>extern crate itertools;</span>
+<span>use itertools::Itertools;</span>
+<span>use std::cmp::{max, min};</span>
+<span></span>
+<span>// these come from the puzzle</span>
+<span></span>
+<span>const PLAYER_HP: i32 = 100;</span>
+<span></span>
+<span>// (cost, damage, armor)</span>
+<span>const WEAPONS: [(i32, i32, i32); 5] = [(8, 4, 0), (10, 5, 0), (25, 6, 0), (40, 7, 0), (78, 8, 0)];</span>
+<span></span>
+<span>// (cost, damage, armor)</span>
+<span>const ARMORS: [(i32, i32, i32); 5] = [(13, 0, 1), (31, 0, 2), (53, 0, 3), (75, 0, 4), (102, 0, 5)];</span>
+<span></span>
+<span>// (cost, damage, armor)</span>
+<span>const RINGS: [(i32, i32, i32); 6] = [</span>
+<span>    (25, 1, 0),</span>
+<span>    (50, 2, 0),</span>
+<span>    (100, 3, 0),</span>
+<span>    (20, 0, 1),</span>
+<span>    (40, 0, 2),</span>
+<span>    (80, 0, 3),</span>
+<span>];</span>
+<span></span>
+<span>fn player_wins_fight(php: i32, pd: i32, pa: i32, bhp: i32, bd: i32, ba: i32) -> bool {</span>
+<span>    let mut php = php;</span>
+<span>    let mut bhp = bhp;</span>
+<span></span>
+<span>    loop {</span>
+<span>        bhp -= max(1, pd - ba);</span>
+<span>        if bhp <= 0 {</span>
+<span>            return true;</span>
+<span>        }</span>
+<span></span>
+<span>        php -= max(1, bd - pa);</span>
+<span>        if php <= 0 {</span>
+<span>            return false;</span>
+<span>        }</span>
+<span>    }</span>
+<span>}</span>
+<span></span>
+<span>fn find_optimal_equipment(boss: (i32, i32, i32)) -> (i32, i32) {</span>
+<span>    let mut optimal_cost = std::i32::MAX;</span>
+<span>    let mut worst_cost = 0;</span>
+<span></span>
+<span>    for weapon in WEAPONS.iter() {</span>
+<span>        for a in -1..(ARMORS.len() as i32) {</span>
+<span>            let armor = if a == -1 {</span>
+<span>                (0, 0, 0)</span>
+<span>            } else {</span>
+<span>                ARMORS[a as usize]</span>
+<span>            };</span>
+<span></span>
+<span>            for num_rings in 0..=2 {</span>
+<span>                let ring_combinations: Vec<Vec<(i32, i32, i32)>> = (0..RINGS.len())</span>
+<span>                    .combinations(num_rings)</span>
+<span>                    .map(|c| c.into_iter().map(|ridx| RINGS[ridx]).collect())</span>
+<span>                    .collect();</span>
+<span></span>
+<span>                for rings in ring_combinations {</span>
+<span>                    let cost: i32 = weapon.0 + armor.0 + rings.iter().map(|r| r.0).sum::<i32>();</span>
+<span>                    let player_damage = weapon.1 + armor.1 + rings.iter().map(|r| r.1).sum::<i32>();</span>
+<span>                    let player_armor = weapon.2 + armor.2 + rings.iter().map(|r| r.2).sum::<i32>();</span>
+<span></span>
+<span>                    if player_wins_fight(</span>
+<span>                        PLAYER_HP,</span>
+<span>                        player_damage,</span>
+<span>                        player_armor,</span>
+<span>                        boss.0,</span>
+<span>                        boss.1,</span>
+<span>                        boss.2,</span>
+<span>                    ) {</span>
+<span>                        optimal_cost = min(cost, optimal_cost);</span>
+<span>                    }</span>
+<span></span>
+<span>                    if !player_wins_fight(</span>
+<span>                        PLAYER_HP,</span>
+<span>                        player_damage,</span>
+<span>                        player_armor,</span>
+<span>                        boss.0,</span>
+<span>                        boss.1,</span>
+<span>                        boss.2,</span>
+<span>                    ) {</span>
+<span>                        worst_cost = max(cost, worst_cost);</span>
+<span>                    }</span>
+<span>                }</span>
+<span>            }</span>
+<span>        }</span>
+<span>    }</span>
+<span></span>
+<span>    (optimal_cost, worst_cost)</span>
+<span>}</span>
+<span></span>
+<span>fn get_boss_stats(input: &str) -> (i32, i32, i32) {</span>
+<span>    let mut lines = input.lines();</span>
+<span>    let hp = lines</span>
+<span>        .next()</span>
+<span>        .map(|l| l.split(':').nth(1).unwrap().trim().parse::<i32>().unwrap())</span>
+<span>        .unwrap();</span>
+<span>    let damage = lines</span>
+<span>        .next()</span>
+<span>        .map(|l| l.split(':').nth(1).unwrap().trim().parse::<i32>().unwrap())</span>
+<span>        .unwrap();</span>
+<span>    let armor = lines</span>
+<span>        .next()</span>
+<span>        .map(|l| l.split(':').nth(1).unwrap().trim().parse::<i32>().unwrap())</span>
+<span>        .unwrap();</span>
+<span>    (hp, damage, armor)</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day21, part1)]</span>
+<span>pub fn run(input: &str) -> String {</span>
+<span>    let boss = get_boss_stats(input);</span>
+<span></span>
+<span>    let res = find_optimal_equipment(boss).0.to_string();</span>
+<span></span>
+<span>    utils::solve(2015, 21, "1", &res);</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[aoc(day21, part2)]</span>
+<span>pub fn run_pt2(input: &str) -> String {</span>
+<span>    let boss = get_boss_stats(input);</span>
+<span></span>
+<span>    let res = find_optimal_equipment(boss).1.to_string();</span>
+<span></span>
+<span>    utils::solve(2015, 21, "2", &res);</span>
+<span></span>
+<span>    res</span>
+<span>}</span>
+<span></span>
+<span>#[test]</span>
+<span>fn test_player_wins_fight() {</span>
+<span>    assert_eq!(player_wins_fight(8, 5, 5, 12, 7, 2), true);</span>
+<span>}</span>
+<span></span>
 </pre>
