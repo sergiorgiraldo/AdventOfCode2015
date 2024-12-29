@@ -1,0 +1,2 @@
+input/** filter=git-crypt diff=git-crypt
+puzzles/** filter=git-crypt diff=git-crypt
