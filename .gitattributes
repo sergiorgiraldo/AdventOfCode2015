@@ -1,2 +1,2 @@
-input/** filter=git-crypt diff=git-crypt
+input/2015/** filter=git-crypt diff=git-crypt
 puzzles/** filter=git-crypt diff=git-crypt
