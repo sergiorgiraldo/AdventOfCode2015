@@ -1,5 +1,12 @@
 # Changelog
 
+## [17.1.0](https://github.com/sergiorgiraldo/AdventOfCode2015/compare/v17.0.0...v17.1.0) (2024-12-29)
+
+
+### Features
+
+* navigation in the viewer ([3f3447c](https://github.com/sergiorgiraldo/AdventOfCode2015/commit/3f3447ccaf5cd2af8cdff6137e1d23ed7fc86bcf))
+
 ## [17.0.0](https://github.com/sergiorgiraldo/AdventOfCode2015/compare/v16.0.0...v17.0.0) (2024-01-25)
 
 
