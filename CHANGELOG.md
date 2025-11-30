@@ -1,5 +1,12 @@
 # Changelog
 
+## [17.2.0](https://github.com/sergiorgiraldo/AdventOfCode2015/compare/v17.1.0...v17.2.0) (2025-11-30)
+
+
+### Features
+
+* retrieve easter-eggs ([a90a7bb](https://github.com/sergiorgiraldo/AdventOfCode2015/commit/a90a7bba938fd9e7cb49eacc0cc4436817e13dff))
+
 ## [17.1.0](https://github.com/sergiorgiraldo/AdventOfCode2015/compare/v17.0.0...v17.1.0) (2024-12-29)
 
 
